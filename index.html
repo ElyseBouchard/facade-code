@@ -34,13 +34,16 @@
 <main>
   <section class="hero" aria-label="Facade">
     <img class="poster" src="/media/site-poster.jpg" alt="" width="1920" height="1080" fetchpriority="high">
-    <video muted loop playsinline preload="metadata" aria-label="Aerial footage of a concrete building under construction, with a crew working on the top slab."></video>
+    <video autoplay muted loop playsinline preload="auto" poster="/media/site-poster.jpg" aria-label="Aerial footage of a concrete building under construction, with a crew working on the top slab.">
+      <source src="/media/site-720.mp4" type="video/mp4" media="(max-width: 900px)">
+      <source src="/media/site-1080.mp4" type="video/mp4">
+    </video>
     <div class="hero-foot">
       <div>
         <h1 class="hero-statement-mobile">Find unforeseen conditions before renovation begins.</h1>
         <p class="hero-sub">Facade uses scanning technology to help renovation teams see what’s behind walls and plan their work before demolition.</p>
       </div>
-      <p class="hero-meta">1.1—5.3</p>
+      <p class="hero-meta"><button class="hero-toggle" type="button" aria-pressed="false">Pause</button><span aria-hidden="true">  1.1—5.3</span></p>
     </div>
   </section>
 

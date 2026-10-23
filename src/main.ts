@@ -2,18 +2,24 @@ import './style.css';
 
 const $ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => root.querySelector<T>(s as never) as T | null;
 const $$ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => [...root.querySelectorAll<T>(s as never)] as T[];
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const root = document.documentElement;
 
-/* ---------- hero footage: the poster shows at once; the loop fades in over it once it plays ---------- */
+/* ---------- hero footage: autoplays from the HTML (muted, inline, 720p on small screens); the script keeps it going ---------- */
 const hero = $('.hero');
 const video = $<HTMLVideoElement>('.hero video');
-if (hero && video && !reduced) {
-  const small = matchMedia('(max-width: 900px)').matches || (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-  video.src = small ? '/media/site-720.mp4' : '/media/site-1080.mp4';
-  video.addEventListener('playing', () => video.classList.add('playing'), { once: true });
+if (hero && video) {
+  video.muted = video.defaultMuted = true;
+  let held = false;
+  const play = () => { if (!held) void video.play().catch(() => {}) };
+  play();
+  // Some browsers hold autoplay (iPhone Low Power Mode, "never auto-play" settings) until the first touch, scroll or key.
+  const nudge = () => { if (video.paused) play() };
+  for (const type of ['pointerdown', 'touchstart', 'keydown', 'scroll']) addEventListener(type, nudge, { once: true, passive: true });
   // Only play while the hero is on screen, so the grid below never competes with the decoder.
-  new IntersectionObserver(([e]) => { if (e?.isIntersecting) void video.play().catch(() => {}); else video.pause(); }).observe(hero);
+  new IntersectionObserver(([e]) => { if (e?.isIntersecting) play(); else video.pause() }).observe(hero);
+  // A visible pause control, for anyone who would rather the footage stood still.
+  const toggle = $<HTMLButtonElement>('.hero-toggle');
+  toggle?.addEventListener('click', () => { held = !held; if (held) video.pause(); else play(); toggle.textContent = held ? 'Play' : 'Pause'; toggle.setAttribute('aria-pressed', String(held)) });
 }
 
 /* ---------- masthead: light over the footage, dark over the paper; the statement leaves with the hero ---------- */

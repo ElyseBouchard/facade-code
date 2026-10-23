@@ -7,30 +7,32 @@
 <meta name="description" content="Facade helps renovation teams find unforeseen conditions behind walls before demolition. What it is, what is built, and what is still a concept.">
 <meta name="theme-color" content="#121212">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="font" href="/fonts/NeueHaas.woff2" type="font/woff2" crossorigin>
+<link rel="preload" as="font" href="/fonts/PPNeueMontreal.woff2" type="font/woff2" crossorigin>
 </head>
 <body class="page-about">
-<header class="masthead">
+<div class="grid-lines" aria-hidden="true"><i class="cross x1 y1"></i><i class="cross x2 y1"></i><i class="cross x3 y1"></i><i class="cross x1 y2"></i><i class="cross x2 y2"></i><i class="cross x3 y2"></i></div>
+<header class="masthead light">
   <a class="brand" href="/">Facade</a>
-  <span></span>
-  <nav class="menu-links" aria-label="Main"><a href="/">Index</a></nav>
+  <nav class="menu-links" aria-label="Main"><a class="underline" href="/">Index</a><a class="underline" href="https://facade.build/">Demo ↗</a><a class="underline" href="https://facade.build/waitlist">Waitlist ↗</a></nav>
   <button class="menu-toggle" aria-expanded="false" aria-controls="overlay-menu">Menu</button>
 </header>
-<div class="overlay-menu" id="overlay-menu"><a href="/">Index</a><a href="https://facade.build/">Demo</a><a href="https://facade.build/waitlist">Waitlist</a></div>
+<div class="overlay-menu" id="overlay-menu"><a href="/">Index</a><a href="https://facade.build/">Demo ↗</a><a href="https://facade.build/waitlist">Waitlist ↗</a></div>
 
 <main class="about fade-in">
+  <h1>About Facade.</h1>
   <div class="about-copy">
-    <h1 class="sr-only">About Facade</h1>
     <p>Facade helps renovation teams find unforeseen conditions before renovation begins. A handheld scanner is rolled along a wall, and what it records is placed on a model of that wall, bay by bay: framing, ducts, piping and conduit, as evidence for the team to review.</p>
     <p>On a $1M renovation, change orders add about $35,600 on average, and the largest share comes from existing conditions nobody could see. Facade is built to move that discovery before demolition, so the plan, the cost and the schedule are set with the wall still closed.</p>
     <p class="muted">Facade is in development. The scanner shown on this site is a concept model: its radar bay and coil design are reserved space, not chosen parts, and no sensor has been validated for finding concealed services. The demo runs on synthetic data, and every reading in it is a lead for a person to confirm, not a finished survey.</p>
-    <p class="muted">Change-order figures: a 2018 study of 161 school renovation projects (1.45%, 1.36% and 0.75% of contract for unexpected conditions, design changes and owner changes), scaled to $1M. <a href="https://oasis.library.unlv.edu/fac_articles/542/" target="_blank" rel="noreferrer">Source ↗</a></p>
+    <p class="muted">Change-order figures: a 2018 study of 161 school renovation projects (1.45%, 1.36% and 0.75% of contract for unexpected conditions, design changes and owner changes), scaled to $1M. <a class="underline" href="https://oasis.library.unlv.edu/fac_articles/542/" target="_blank" rel="noreferrer">Source ↗</a></p>
   </div>
   <dl class="about-links">
-    <dt>W</dt><dd><a href="https://facade.build/waitlist">Join the waitlist ↗</a></dd>
-    <dt>D</dt><dd><a href="https://facade.build/">Try the demo ↗</a></dd>
-    <dt>H</dt><dd><a href="https://facade.build/hardware">Hardware lab ↗</a></dd>
+    <dt>W</dt><dd><a class="underline" href="https://facade.build/waitlist">Join the waitlist ↗</a></dd>
+    <dt>D</dt><dd><a class="underline" href="https://facade.build/">Try the demo ↗</a></dd>
+    <dt>H</dt><dd><a class="underline" href="https://facade.build/hardware">Hardware lab ↗</a></dd>
   </dl>
-  <footer class="about-foot"><span>© 2026 Facade</span><a href="/">Index</a></footer>
+  <footer class="about-foot"><span>© 2026 Facade</span><a class="underline" href="/">Index</a></footer>
 </main>
 <script type="module" src="/src/main.ts"></script>
 </body>

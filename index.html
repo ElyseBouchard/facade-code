@@ -11,49 +11,62 @@
 <meta property="og:image" content="/media/site-poster.jpg">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" as="image" href="/media/site-poster.jpg" fetchpriority="high">
+<link rel="preload" as="font" href="/fonts/NeueHaas.woff2" type="font/woff2" crossorigin>
+<link rel="preload" as="font" href="/fonts/PPNeueMontreal.woff2" type="font/woff2" crossorigin>
 <script>try{if(!sessionStorage.getItem('facade-intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('intro')}catch(e){}</script>
 </head>
 <body class="page-home">
-<a class="sr-only" href="#index">Skip to the project index</a>
-
+<a class="sr-only" href="#index">Skip to the index</a>
+<div class="grid-lines" aria-hidden="true"><i class="cross x1 y1"></i><i class="cross x2 y1"></i><i class="cross x3 y1"></i><i class="cross x1 y2"></i><i class="cross x2 y2"></i><i class="cross x3 y2"></i></div>
 <div class="preloader" aria-hidden="true"></div>
 
 <header class="masthead light">
   <a class="brand" href="/">Facade</a>
-  <p class="statement">Find unforeseen conditions before renovation begins.</p>
-  <nav class="menu-links" aria-label="Main"><a href="#scanner">Scanner</a><span aria-hidden="true">,</span><a href="https://facade.build/">Demo</a><span aria-hidden="true">,</span><a href="/about/">About</a></nav>
+  <nav class="menu-links" aria-label="Main"><a class="underline" href="#scanner">Scanner</a><a class="underline" href="#numbers">Numbers</a><a class="underline" href="https://facade.build/">Demo ↗</a><a class="underline" href="/about/">About</a></nav>
   <button class="menu-toggle" aria-expanded="false" aria-controls="overlay-menu">Menu</button>
 </header>
 <div class="overlay-menu" id="overlay-menu">
   <a href="#scanner">Scanner</a>
-  <a href="https://facade.build/">Demo</a>
-  <a href="https://facade.build/waitlist">Waitlist</a>
+  <a href="#numbers">Numbers</a>
+  <a href="https://facade.build/">Demo ↗</a>
+  <a href="https://facade.build/waitlist">Waitlist ↗</a>
   <a href="/about/">About</a>
 </div>
 
 <main>
-  <section class="hero" aria-label="Facade">
+  <section class="hero" aria-labelledby="hero-title">
     <img class="poster" src="/media/site-poster.jpg" alt="" width="1920" height="1080" fetchpriority="high">
     <video autoplay muted loop playsinline preload="auto" poster="/media/site-poster.jpg" aria-label="Aerial footage of a concrete building under construction, with a crew working on the top slab.">
       <source src="/media/site-720.mp4" type="video/mp4" media="(max-width: 900px)">
       <source src="/media/site-1080.mp4" type="video/mp4">
     </video>
-    <div class="hero-foot">
-      <div>
-        <h1 class="hero-statement-mobile">Find unforeseen conditions before renovation begins.</h1>
-        <p class="hero-sub">Facade uses scanning technology to help renovation teams see what’s behind walls and plan their work before demolition.</p>
+    <div class="hero-grid" aria-hidden="true"><i class="cross x1 y1"></i><i class="cross x2 y1"></i><i class="cross x3 y1"></i><i class="cross x1 y2"></i><i class="cross x2 y2"></i><i class="cross x3 y2"></i></div>
+    <div class="hero-copy">
+      <h1 class="hero-title" id="hero-title"><span class="sr-only">Find unforeseen conditions before renovation begins.</span><span class="line" aria-hidden="true">Find unforeseen</span><span class="line" aria-hidden="true">conditions before</span><span class="line" aria-hidden="true">renovation begins.</span></h1>
+      <p class="hero-sub">Facade uses scanning technology to help renovation teams see what’s behind walls and plan their work before demolition.</p>
+      <div class="hero-actions">
+        <a class="demo-button" href="https://facade.build/">Open demo project <span class="arrow" aria-hidden="true">↗</span></a>
+        <nav class="hero-links" aria-label="More"><a class="underline" href="https://facade.build/waitlist">Waitlist ↗</a><a class="underline" href="https://facade.build/hardware">Hardware ↗</a></nav>
       </div>
-      <p class="hero-meta"><button class="hero-toggle" type="button" aria-pressed="false">Pause</button><span aria-hidden="true">  1.1—5.3</span></p>
+    </div>
+    <div class="hero-foot">
+      <p class="bracket">Aerial / a concrete frame under construction</p>
+      <p class="scroll-cue" aria-hidden="true"><span>Scroll</span><i></i></p>
+      <p class="hero-controls"><button class="hero-toggle underline" type="button" aria-pressed="false">Pause</button><span class="num" aria-hidden="true">1.1—5.1</span></p>
     </div>
   </section>
 
-  <div class="spacer"></div>
+  <header class="section-head">
+    <p class="micro bracket">The index / 01</p>
+    <h2>From the site, to the wall, to the decision.</h2>
+    <p class="lede">The building, what hides behind its finished walls, the scanner, the evidence it leaves, and what a surprise costs.</p>
+  </header>
 
   <section class="project-grid" id="index" aria-label="Project index">
     <article class="caption-cell" data-ch="1">
-      <p class="range">1.1—1.4</p>
-      <h2>UNFORESEEN CONDITIONS</h2>
-      <p>Renovation, Cost</p>
+      <span class="range">1.1—1.4</span>
+      <h3>Unforeseen conditions.</h3>
+      <p class="tags bracket">Renovation, cost</p>
       <p class="desc">On a $1M renovation, surprises add about $35,600 in change orders. The largest share comes from existing conditions nobody could see.</p>
     </article>
     <figure class="tile" data-ch="1"><span class="tile-idx">1.1</span><button type="button"><img src="/images/site-wide-640.jpg" data-full="/images/site-wide-1600.jpg" width="640" height="427" loading="lazy" decoding="async" alt="Aerial view of a concrete building under construction beside a tower crane."></button></figure>
@@ -62,9 +75,9 @@
     <figure class="tile" data-ch="1"><span class="tile-idx">1.4</span><button type="button"><img src="/images/site-edge-640.jpg" data-full="/images/site-edge-1600.jpg" width="640" height="800" loading="lazy" decoding="async" alt="The slab edge and the floors below, with scaffolding along the facade."></button></figure>
 
     <article class="caption-cell" data-ch="2">
-      <p class="range">2.1—2.4</p>
-      <h2>BEHIND THE WALL</h2>
-      <p>Mechanical, Electrical, Plumbing</p>
+      <span class="range">2.1—2.4</span>
+      <h3>Behind the wall.</h3>
+      <p class="tags bracket">Mechanical, electrical, plumbing</p>
       <p class="desc">A finished wall hides studs, ducts, copper, drains and conduit. Facade records what is behind it, bay by bay, so the team can plan before anyone opens it up.</p>
     </article>
     <figure class="tile" data-ch="2"><span class="tile-idx">2.1</span><button type="button"><img src="/images/wall-closed-640.jpg" data-full="/images/wall-closed-1600.jpg" width="640" height="480" loading="lazy" decoding="async" alt="An illustrative interior wall, closed: painted gypsum board on a concrete slab."></button></figure>
@@ -73,9 +86,9 @@
     <figure class="tile" data-ch="2"><span class="tile-idx">2.4</span><button type="button"><img src="/images/wall-copper-640.jpg" data-full="/images/wall-copper-1600.jpg" width="640" height="480" loading="lazy" decoding="async" alt="Close-up of copper supply lines and shutoff valves in the cavity."></button></figure>
 
     <article class="caption-cell" data-ch="3" id="scanner">
-      <p class="range">3.1—3.6</p>
-      <h2>THE SCANNER</h2>
-      <p>Hardware, Concept</p>
+      <span class="range">3.1—3.6</span>
+      <h3>The scanner, taken apart.</h3>
+      <p class="tags bracket">Hardware, concept</p>
       <p class="desc">A handheld scanner, rolled along the wall: a thermal camera in the nose, a metal-sensing coil and a bay reserved for radar underneath, and a roller that measures distance as it goes.</p>
     </article>
     <figure class="tile" data-ch="3"><span class="tile-idx">3.1</span><button type="button"><img src="/images/scanner-front-640.jpg" data-full="/images/scanner-front-1600.jpg" width="640" height="480" loading="lazy" decoding="async" alt="The Facade scanner concept: a white and charcoal handheld body with a palm grip and a sensor nose."></button></figure>
@@ -86,46 +99,60 @@
     <figure class="tile" data-ch="3"><span class="tile-idx">3.6</span><button type="button"><img src="/images/scanner-rear-640.jpg" data-full="/images/scanner-rear-1600.jpg" width="640" height="480" loading="lazy" decoding="async" alt="The rear panel with three USB-C ports labelled A, B and C."></button></figure>
 
     <article class="caption-cell" data-ch="4">
-      <p class="range">4.1—4.3</p>
-      <h2>FIELD EVIDENCE</h2>
-      <p>Software, Review</p>
+      <span class="range">4.1—4.4</span>
+      <h3>Field evidence.</h3>
+      <p class="tags bracket">Software, review</p>
       <p class="desc">Every reading lands on the wall where it was taken. A detection is a lead, not a verdict: a person reviews it before it changes the plan.</p>
     </article>
     <figure class="tile" data-ch="4"><span class="tile-idx">4.1</span><button type="button"><img src="/images/evidence-wall-640.jpg" data-full="/images/evidence-wall-1600.jpg" width="640" height="337" loading="lazy" decoding="async" alt="A wall in the Facade demo with field records drawn on its face as red marks."></button></figure>
     <figure class="tile" data-ch="4"><span class="tile-idx">4.2</span><button type="button"><img src="/images/evidence-marks-640.jpg" data-full="/images/evidence-marks-1600.jpg" width="640" height="800" loading="lazy" decoding="async" alt="Close-up of the red evidence marks: a dashed ring for an instrument detection, a circle for an observation."></button></figure>
     <figure class="tile" data-ch="4"><span class="tile-idx">4.3</span><button type="button"><img src="/images/evidence-layers-640.jpg" data-full="/images/evidence-layers-1600.jpg" width="640" height="337" loading="lazy" decoding="async" alt="The demo wall with its layers opened, each red mark traced back to the framing and services behind it."></button></figure>
-
-    <article class="caption-cell" data-ch="5">
-      <p class="range">5.1—5.3</p>
-      <h2>WHAT SURPRISES COST</h2>
-      <p>Cost, Planning</p>
-      <p class="desc">Fewer surprises mean fewer change orders. Facade puts the evidence and the cost of each option side by side, so the decision is made before demolition, not during it.</p>
-    </article>
-    <figure class="tile" data-ch="5"><span class="tile-idx">5.1</span><button type="button"><img src="/images/cost-site-640.jpg" data-full="/images/cost-site-1600.jpg" width="640" height="480" loading="lazy" decoding="async" alt="A line drawing of a renovation site with fans of red lines rising from where surprises come from, one line per thousand dollars."></button></figure>
-    <figure class="tile" data-ch="5"><span class="tile-idx">5.2</span><button type="button"><img src="/images/cost-fans-640.jpg" data-full="/images/cost-fans-1600.jpg" width="640" height="800" loading="lazy" decoding="async" alt="Close-up of the red lines rising from the building."></button></figure>
-    <figure class="tile" data-ch="5"><span class="tile-idx">5.3</span><button type="button"><img src="/images/cost-building-640.jpg" data-full="/images/cost-building-1600.jpg" width="640" height="427" loading="lazy" decoding="async" alt="The renovation site drawn in black hidden-line work: the building, street and trees."></button></figure>
+    <figure class="tile" data-ch="4"><span class="tile-idx">4.4</span><button type="button"><img src="/images/cost-building-640.jpg" data-full="/images/cost-building-1600.jpg" width="640" height="427" loading="lazy" decoding="async" alt="The renovation site drawn in black hidden-line work, where the evidence is used to plan the work."></button></figure>
   </section>
 
-  <div class="spacer"></div>
-  <div class="spacer"></div>
+  <header class="section-head" id="numbers">
+    <p class="micro bracket">The numbers / 02</p>
+    <h2>What surprises cost.</h2>
+    <p class="lede">On a $1M renovation, change orders add about $35,600. The largest share is the one nobody could see.</p>
+  </header>
 
-  <div class="bottom-caption">
+  <section class="numbers" aria-label="Change-order costs on a $1M renovation">
+    <figure class="tile" data-ch="5"><span class="tile-idx">5.1</span><button type="button"><img src="/images/cost-site-1600.jpg" data-full="/images/cost-site-1600.jpg" width="1467" height="1100" loading="lazy" decoding="async" alt="A line drawing of a renovation site with fans of red lines rising from where surprises come from, one line per thousand dollars."></button><figcaption>One red line per $1,000</figcaption></figure>
+    <div class="cost caption-cell" data-ch="5">
+      <h3 class="sr-only">What surprises cost.</h3>
+      <ol class="cost-rows">
+        <li class="cost-row c1"><i aria-hidden="true"></i><b>Unexpected conditions</b><span class="amount" data-scramble>$14,500</span></li>
+        <li class="cost-row c2"><i aria-hidden="true"></i><b>Design changes</b><span class="amount" data-scramble>$13,600</span></li>
+        <li class="cost-row c3"><i aria-hidden="true"></i><b>Owner-requested changes</b><span class="amount" data-scramble>$7,500</span></li>
+        <li class="cost-row total"><b>Total per $1M of work</b><span class="amount" data-scramble>$35,600</span></li>
+      </ol>
+      <p class="source">2018 study of 161 school renovations, scaled to $1M. Historical averages, not quotes. <a class="underline" href="https://oasis.library.unlv.edu/fac_articles/542/" target="_blank" rel="noreferrer">Source ↗</a> <a class="underline" href="https://facade.build/savings">Estimate savings ↗</a></p>
+    </div>
+  </section>
+
+  <section class="closing" aria-label="Status">
+    <h2>Find it before the wall comes down.</h2>
     <p>Facade is in development. The scanner shown is a concept model, and the demo runs on synthetic data.</p>
     <a class="plus" href="https://facade.build/waitlist" aria-label="Join the waitlist">+</a>
-  </div>
+  </section>
 </main>
 
 <footer class="site-foot">
-  <span>© 2026 Facade</span>
-  <nav aria-label="Elsewhere"><a href="https://facade.build/waitlist">Waitlist</a><span aria-hidden="true">,</span><a href="https://facade.build/">Demo</a><span aria-hidden="true">,</span><a href="https://facade.build/hardware">Hardware</a></nav>
+  <div class="foot-brand">
+    <span class="mixed-wordmark" role="img" aria-label="Facade"><span class="mw f-haas" style="--i:0" aria-hidden="true">F</span><span class="mw f-mono t1" style="--i:1" aria-hidden="true">A</span><span class="mw f-cyber" style="--i:2" aria-hidden="true">C</span><span class="mw f-ui t2" style="--i:3" aria-hidden="true">A</span><span class="mw f-haas" style="--i:4" aria-hidden="true">D</span><span class="mw f-mono t1" style="--i:5" aria-hidden="true">E</span></span>
+    <span>Field evidence before demolition. © 2026 Facade</span>
+  </div>
+  <span></span>
+  <nav class="foot-links" aria-label="Elsewhere"><a class="underline" href="https://facade.build/waitlist">Waitlist ↗</a><a class="underline" href="https://facade.build/">Demo ↗</a><a class="underline" href="https://facade.build/hardware">Hardware ↗</a><a class="underline" href="/about/">About</a></nav>
 </footer>
+<div class="reading-progress" aria-hidden="true"></div>
 
 <div class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
-  <button class="lb-close" type="button">Close</button>
+  <button class="lb-close underline" type="button">Close</button>
   <figure><img alt=""></figure>
   <div class="lb-bar">
     <p class="lb-caption"></p>
-    <div class="lb-nav"><button class="lb-prev" type="button">Previous</button><button class="lb-next" type="button">Next</button></div>
+    <div class="lb-nav"><button class="lb-prev underline" type="button">Previous</button><button class="lb-next underline" type="button">Next</button></div>
     <p class="lb-count"></p>
   </div>
 </div>

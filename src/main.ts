@@ -3,6 +3,7 @@ import './style.css';
 const $ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => root.querySelector<T>(s as never) as T | null;
 const $$ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => [...root.querySelectorAll<T>(s as never)] as T[];
 const root = document.documentElement;
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- hero footage: autoplays from the HTML (muted, inline, 720p on small screens); the script keeps it going ---------- */
 const hero = $('.hero');
@@ -15,31 +16,68 @@ if (hero && video) {
   // Some browsers hold autoplay (iPhone Low Power Mode, "never auto-play" settings) until the first touch, scroll or key.
   const nudge = () => { if (video.paused) play() };
   for (const type of ['pointerdown', 'touchstart', 'keydown', 'scroll']) addEventListener(type, nudge, { once: true, passive: true });
-  // Only play while the hero is on screen, so the grid below never competes with the decoder.
+  // Only play while the hero is on screen, so the index below never competes with the decoder.
   new IntersectionObserver(([e]) => { if (e?.isIntersecting) play(); else video.pause() }).observe(hero);
-  // A visible pause control, for anyone who would rather the footage stood still.
   const toggle = $<HTMLButtonElement>('.hero-toggle');
   toggle?.addEventListener('click', () => { held = !held; if (held) video.pause(); else play(); toggle.textContent = held ? 'Play' : 'Pause'; toggle.setAttribute('aria-pressed', String(held)) });
 }
 
-/* ---------- masthead: light over the footage, dark over the paper; the statement leaves with the hero ---------- */
-const head = $('.masthead');
-if (head && hero) {
+/* ---------- headline: each letter flickers in once the intro hands over, in a scattered order ---------- */
+const lines = $$('.hero-title .line');
+const letters = lines.reduce((n, l) => n + (l.textContent?.length ?? 0), 0);
+let k = 0;
+for (const line of lines) {
+  const text = line.textContent ?? ''; line.textContent = '';
+  for (const c of text) { const s = document.createElement('span'); s.className = 'l'; s.textContent = c; s.style.setProperty('--d', String((k++ * 7919) % letters)); line.append(s) }
+}
+// Each line stays whole; on narrow screens the headline scales down until its widest line fits the column (as on the first site).
+const title = $('.hero-title');
+if (title) {
+  const fit = () => {
+    title.style.setProperty('--fit', '1');
+    const widest = Math.max(0, ...lines.map(l => l.getBoundingClientRect().width)), room = title.clientWidth;
+    title.style.setProperty('--fit', widest > room ? (room / widest * .98).toFixed(3) : '1');
+  };
+  fit(); new ResizeObserver(fit).observe(title.parentElement!); void document.fonts?.ready.then(fit);
+}
+
+/* ---------- masthead light over the footage; a red reading line along the bottom ---------- */
+const head = $('.masthead'), progress = $('.reading-progress');
+{
   let frame = 0;
-  const update = () => { frame = 0; const b = hero.getBoundingClientRect().bottom; head.classList.toggle('light', b > 30); head.classList.toggle('past-hero', b < innerHeight * .55) };
+  const update = () => {
+    frame = 0;
+    if (head && hero) head.classList.toggle('light', hero.getBoundingClientRect().bottom > 40);
+    if (progress) progress.style.transform = `scaleX(${scrollY / Math.max(1, root.scrollHeight - innerHeight)})`;
+  };
   addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(update) }, { passive: true });
+  addEventListener('resize', update);
   update();
-} else head?.classList.remove('light');
+}
+
+/* ---------- symbols flicker through numbers and links on hover, then settle (the first site's scramble) ---------- */
+const GLYPHS = '#$%&*+/<>=?@^~!';
+const scramble = (el: HTMLElement) => {
+  if (el.dataset.scrambling || still) return;
+  const text = el.textContent ?? '', chars = [...text], total = 14; let step = 0; el.dataset.scrambling = '1';
+  const id = setInterval(() => {
+    step++; const shown = Math.floor(chars.length * Math.max(0, step - 4) / (total - 4));
+    el.textContent = chars.map((c, i) => c === ' ' || c === '↗' || i < shown ? c : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]).join('');
+    if (step >= total) { clearInterval(id); el.textContent = text; delete el.dataset.scrambling }
+  }, 38);
+};
+for (const el of $$('[data-scramble], .menu-links a, .hero-links a, .foot-links a')) {
+  if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', (el.textContent ?? '').replace('↗', '').trim());
+  el.addEventListener('pointerenter', () => scramble(el));
+}
 
 /* ---------- mobile menu ---------- */
-const toggle = $<HTMLButtonElement>('.menu-toggle');
-toggle?.addEventListener('click', () => {
-  const open = !document.body.classList.contains('menu-open');
-  document.body.classList.toggle('menu-open', open); toggle.setAttribute('aria-expanded', String(open)); toggle.textContent = open ? 'Close' : 'Menu';
-});
-$$('.overlay-menu a').forEach(a => a.addEventListener('click', () => { document.body.classList.remove('menu-open'); if (toggle) { toggle.setAttribute('aria-expanded', 'false'); toggle.textContent = 'Menu' } }));
+const menu = $<HTMLButtonElement>('.menu-toggle');
+const setMenu = (open: boolean) => { document.body.classList.toggle('menu-open', open); menu?.setAttribute('aria-expanded', String(open)); if (menu) menu.textContent = open ? 'Close' : 'Menu' };
+menu?.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+$$('.overlay-menu a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
-/* ---------- index: hovering a chapter numbers its images and quiets the rest ---------- */
+/* ---------- index: hovering a chapter numbers its images in red and quiets the rest ---------- */
 const grid = $('.project-grid');
 if (grid) {
   let current = '';
@@ -54,16 +92,16 @@ if (grid) {
   grid.addEventListener('focusout', e => { if (!grid.contains(e.relatedTarget as Node)) focus('') });
 }
 
-/* ---------- lightbox: every image in order, with its chapter and index ---------- */
+/* ---------- viewer: every image in order, with its chapter and index ---------- */
 const box = $('.lightbox');
-if (box && grid) {
-  const tiles = $$('.tile', grid), img = $<HTMLImageElement>('figure img', box)!, caption = $('.lb-caption', box)!, count = $('.lb-count', box)!;
-  const titles = new Map($$('.caption-cell', grid).map(c => [c.dataset.ch!, $('h2', c)?.textContent ?? '']));
+if (box) {
+  const tiles = $$('main .tile'), img = $<HTMLImageElement>('figure img', box)!, caption = $('.lb-caption', box)!, count = $('.lb-count', box)!;
+  const titles = new Map($$('.caption-cell[data-ch]').map(c => [c.dataset.ch!, $('h2, h3', c)?.textContent ?? '']));
   let at = -1, opener: HTMLElement | null = null;
   const show = (i: number) => {
     at = (i + tiles.length) % tiles.length; const t = tiles[at], source = $<HTMLImageElement>('img', t)!;
     img.src = source.dataset.full ?? source.src; img.alt = source.alt;
-    caption.textContent = `${$('.tile-idx', t)?.textContent ?? ''}  ${titles.get(t.dataset.ch!) ?? ''} — ${source.alt}`;
+    caption.replaceChildren(Object.assign(document.createElement('span'), { className: 'num', textContent: $('.tile-idx', t)?.textContent ?? '' }), `${titles.get(t.dataset.ch!) ?? ''} ${source.alt}`);
     count.textContent = `${at + 1} / ${tiles.length}`;
   };
   const open = (i: number, from: HTMLElement) => { opener = from; show(i); box.classList.add('open'); root.style.overflow = 'hidden'; $<HTMLButtonElement>('.lb-close', box)?.focus() };
@@ -80,17 +118,19 @@ if (box && grid) {
   });
 }
 
-/* ---------- intro, once per visit: a strip of frames crosses the paper, then the footage frame grows to fill it ---------- */
+/* ---------- intro, once per visit: the FACADE mark flickers in, a strip of frames crosses, the footage frame grows ---------- */
 const pre = $('.preloader');
+const ready = () => root.classList.add('ready');
 if (pre && root.classList.contains('intro')) {
+  const mark = $('.site-foot .mixed-wordmark')?.cloneNode(true) as HTMLElement | undefined;
   const thumbs = ['site-wide', 'wall-open', 'scanner-front', 'evidence-wall', 'site-crew', 'scanner-exploded', 'cost-site', 'site-core', 'wall-panel', 'scanner-under', 'evidence-layers', 'site-edge', 'wall-copper'];
   const strip = document.createElement('div'); strip.className = 'strip';
   for (const name of [...thumbs, ...thumbs]) { const i = new Image(); i.src = `/images/${name}-160.jpg`; i.alt = ''; strip.append(i) }
   const focusImg = new Image(); focusImg.className = 'focus'; focusImg.src = '/media/site-poster.jpg'; focusImg.alt = '';
-  pre.append(strip, focusImg);
-  const finish = () => { root.classList.remove('intro'); try { sessionStorage.setItem('facade-intro', '1') } catch { /* private mode */ } };
-  setTimeout(() => pre.classList.add('settle'), 1100);
-  setTimeout(() => { const r = focusImg.getBoundingClientRect(); focusImg.style.transform = `scale(${Math.max(innerWidth / r.width, innerHeight / r.height) * 1.02})`; pre.classList.add('grow') }, 1500);
-  setTimeout(() => { finish(); pre.classList.add('done') }, 2550);
-  setTimeout(() => pre.remove(), 3100);
-} else pre?.remove();
+  pre.append(...(mark ? [mark] : []), strip, focusImg);
+  const finish = () => { root.classList.remove('intro'); ready(); try { sessionStorage.setItem('facade-intro', '1') } catch { /* private mode */ } };
+  setTimeout(() => pre.classList.add('settle'), 1200);
+  setTimeout(() => { const r = focusImg.getBoundingClientRect(); focusImg.style.transform = `scale(${Math.max(innerWidth / r.width, innerHeight / r.height) * 1.02})`; pre.classList.add('grow') }, 1600);
+  setTimeout(() => { finish(); pre.classList.add('done') }, 2650);
+  setTimeout(() => pre.remove(), 3200);
+} else { pre?.remove(); requestAnimationFrame(ready) }

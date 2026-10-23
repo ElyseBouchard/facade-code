@@ -1,0 +1,97 @@
+import './landing/style.css';
+import './landing/reference-theme.css';
+import './landing/lab-theme.css';
+import './landing/landing-interactions.css';
+import './v2.css';
+import {useRef,useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {createPortal} from 'react-dom';
+import {ArrowUpRight,Plus} from 'lucide-react';
+import {copy,LangProvider,wordOffsets} from './landing/i18n';
+import {useLandingMotion} from './landing/useLandingMotion';
+import {GridOverlay,MixedWordmark,Words,Spark,Node,Connectors,WireCube,InlineIcon,FieldDrawing,FieldCollage,RealityGlobe,IndexThumb} from './landing/LandingDetails';
+import {WallSection} from './landing/WallSection';
+import {KitSection} from './landing/KitSection';
+import {CostSection} from './landing/CostSection';
+import {ProjectExhibits} from './landing/LandingExhibits';
+import {LogoMark} from './landing/Logo';
+
+/* Facade, v2: the construction footage first, then the first site's sections, in plain English. The demo, savings,
+   waitlist and hardware lab live on the first site (facade.build) and are linked from here. */
+const FIRST='https://facade.build';
+const t=copy.en,language={lang:'en' as const,t,setLang:()=>{}};
+
+/* ---------- the footage plays as soon as the page opens, and keeps looping ---------- */
+const video=document.querySelector<HTMLVideoElement>('.v2-video');
+if(video){
+ video.muted=video.defaultMuted=true;
+ const play=()=>{if(video.paused)void video.play().catch(()=>{})};
+ play();
+ // Some browsers hold autoplay (iPhone Low Power Mode, "never auto-play" settings) until the first touch, scroll or key.
+ for(const type of ['pointerdown','touchstart','keydown','scroll'])addEventListener(type,play,{passive:true});
+ // If anything else pauses it (a power saver, a hidden tab), start it again as soon as the page is in view.
+ video.addEventListener('pause',()=>{if(!document.hidden)setTimeout(play,200)});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)play()});
+}
+
+/* ---------- the headline scales to fit its column; the header is white over the footage ---------- */
+const title=document.querySelector<HTMLElement>('.v2-hero-title');
+if(title){
+ const lines=[...title.querySelectorAll<HTMLElement>('.split-line')];
+ const fit=()=>{title.style.setProperty('--fit','1');const widest=Math.max(0,...lines.map(l=>l.getBoundingClientRect().width)),room=title.clientWidth;title.style.setProperty('--fit',widest>room?(room/widest*.98).toFixed(3):'1')};
+ fit();new ResizeObserver(fit).observe(title.parentElement!);void document.fonts?.ready.then(fit);
+}
+const head=document.querySelector('.lab-header'),hero=document.querySelector('.v2-hero');
+if(head&&hero){let frame=0;const update=()=>{frame=0;head.classList.toggle('on-video',hero.getBoundingClientRect().bottom>40)};addEventListener('scroll',()=>{if(!frame)frame=requestAnimationFrame(update)},{passive:true});update()}
+
+function Footer(){
+ return <>
+  <div className="footer-scan" aria-hidden="true"><IndexThumb/></div>
+  <div className="footer-brand"><span className="footer-logo"><LogoMark/><MixedWordmark/></span><p>{t.footer.tagline}<br/><span>{t.footer.judgment} © {new Date().getFullYear()} FACADE</span></p></div>
+  <a className="footer-top" href="#top"><span className="top-box" aria-hidden="true"><i/></span>{t.footer.top}</a>
+  <div className="footer-reach"><p>{t.footer.cont[0]}<br/>{t.footer.cont[1]}</p><nav className="lab-pills" aria-label={t.footer.navLabel}><a href={`${FIRST}/savings`}>{t.footer.pills[0]}</a><a href={`${FIRST}/waitlist`}>{t.footer.pills[1]}</a><a href={`${FIRST}/hardware`}>{t.footer.pills[2]}</a></nav></div>
+  <small className="footer-note">{t.footer.note}</small>
+ </>
+}
+
+/** Everything under the footage, as on the first site: the wall, the scanner, the numbers, how it works, the software,
+ * savings, questions and the waitlist. */
+function Sections(){
+ const root=useRef(document.getElementById('site') as HTMLDivElement);
+ const [selected,setSelected]=useState<number|null>(null);
+ useLandingMotion(root,{introDone:true,reality:0});
+ const [o1,o2]=[wordOffsets(t.manifesto.s1.parts),wordOffsets(t.manifesto.s2.parts,t.manifesto.s1.parts.join(' ').split(' ').length+1)];
+ const footer=document.getElementById('site-footer');
+ return <LangProvider value={language}>
+  <GridOverlay/>
+  <div className="lab-cursor" aria-hidden="true"><i className="cursor-box"/><span className="cursor-label"/></div><div className="reading-progress" aria-hidden="true"/>
+  <WallSection/>
+  <KitSection/>
+  <CostSection/>
+  <section className="lab-manifesto" id="workflow" data-reveal>
+   <div className="manifesto-art" data-parallax="50" aria-hidden="true">
+    <div className="dial" data-spin=".03">{Array.from({length:12},(_,i)=><span key={i} style={{rotate:`${i*30}deg`}}><b>{i*30}</b></span>)}<i className="dial-ring r1"/><i className="dial-ring r2"/><i className="dial-ring r3"/><i className="dial-cross">+</i></div>
+    <div className="win win-notes" data-origin="bl"><div className="checker-row"><i className="checker-mark"/><span className="sun">✳</span></div><p>{t.manifesto.notes}</p><p className="notes-big">{t.manifesto.notesBig}</p><p>{t.manifesto.record[0]} <span className="pill-word">{t.manifesto.record[1]}</span>{t.manifesto.record[2]}</p></div>
+    <div className="win win-mini" data-origin="tl"><span className="win-x">×</span><FieldDrawing kind={1}/></div>
+    <WireCube/>
+   </div>
+   <Connectors className="manifesto-links" paths={['M24 23 H31.5']}/><Node x={31.5} y={23}/>
+   <div className="lab-statement">
+    <p className="bracket lab-micro" data-scramble={t.manifesto.eyebrow}>{t.manifesto.eyebrow}</p>
+    <h2 className="statement"><span className="sr-only">{t.manifesto.s1.sr}</span><span aria-hidden="true"><Words text={t.manifesto.s1.parts[0]}/> <Spark className="statement-spark"/> <Words text={t.manifesto.s1.parts[1]} from={o1[1]}/> <span className="outline-phrase"><Words text={t.manifesto.s1.parts[2]} from={o1[2]}/><span className="word-tooltip">{t.manifesto.s1.tip}</span></span><InlineIcon kind="link"/></span></h2>
+    <p className="statement statement-2"><span className="sr-only">{t.manifesto.s2.sr}</span><span aria-hidden="true"><Words text={t.manifesto.s2.parts[0]} from={o2[0]}/> <InlineIcon kind="docs"/> <Words text={t.manifesto.s2.parts[1]} from={o2[1]}/> <InlineIcon kind="duct"/> <Words text={t.manifesto.s2.parts[2]} from={o2[2]}/> <InlineIcon kind="target"/> <Words text={t.manifesto.s2.parts[3]} from={o2[3]}/></span></p>
+    <div className="statement-foot"><p className="lab-body">{t.manifesto.body}</p><span className="tool-pill" aria-hidden="true"><RealityGlobe/><i className="checker-mark"/></span></div>
+   </div>
+  </section>
+  <FieldCollage/>
+  <ProjectExhibits selected={selected} select={setSelected} openDemo={()=>{location.href=`${FIRST}/`}}/>
+  <section className="lab-savings" data-reveal><div className="lab-savings-art" data-parallax="40" aria-hidden="true"><div className="savings-dial" data-spin="-.025">{Array.from({length:24},(_,i)=><i key={i} style={{rotate:`${i*15}deg`}}/>)}</div><span className="lab-hour">h</span><span className="lab-time-note">{t.savings.art}</span></div>
+   <div className="savings-copy"><p className="bracket lab-micro" data-scramble={t.savings.eyebrow}>{t.savings.eyebrow}</p><h2><Words text={t.savings.title[0]}/><br/><Words text={t.savings.title[1]} from={wordOffsets(t.savings.title)[1]}/></h2><p>{t.savings.body}</p><a className="lab-action" href={`${FIRST}/savings`}>{t.savings.action} <ArrowUpRight size={15}/></a><small>{t.savings.note}</small></div></section>
+  <section className="lab-questions" id="questions" data-reveal><h2 className="questions-title"><Words text={t.questions.title[0]}/> <Spark/> <Words text={t.questions.title[1]} from={wordOffsets(t.questions.title)[1]}/></h2>
+   <div className="questions-cols"><p className="questions-intro">{t.questions.intro}</p><div className="questions-list">{t.questions.items.map(([q,a])=><details key={q}><summary><span>{q}</span><Plus size={15}/></summary><p>{a}</p></details>)}</div></div></section>
+  <section className="lab-join" data-reveal><p className="bracket lab-micro" data-scramble={t.join.eyebrow}>{t.join.eyebrow}</p><h2><Words text={t.join.title[0]}/><br/><Words text={t.join.title[1]} from={wordOffsets(t.join.title)[1]}/></h2><a className="lab-action" href={`${FIRST}/waitlist`}>{t.join.action} <ArrowUpRight size={16}/></a></section>
+  {footer&&createPortal(<Footer/>,footer)}
+ </LangProvider>
+}
+
+createRoot(document.getElementById('sections')!).render(<Sections/>);

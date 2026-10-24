@@ -215,10 +215,12 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
    const ghost=entry.system==='drywall',see=ghost||next<.995;entry.mat.opacity=(ghost&&isDiagram?ghostOpacity:1)*next;if(entry.mat.transparent!==see){entry.mat.transparent=see;entry.mat.depthWrite=!see;entry.mat.needsUpdate=true}};
     // Slow devices drop ambient occlusion and resolution rather than stutter.
   let ema=1/60,since=0;
-  const draw=(now:number)=>{if(disposed)return;frame=requestAnimationFrame(draw);if(quality==='low'&&now-last<66)return;const dt=Math.min(.1,(now-last)/1000);last=now;if(!visible||document.hidden||!model||!warm)return;
+  const draw=(now:number)=>{if(disposed)return;frame=requestAnimationFrame(draw);if(quality==='low'&&now-last<66)return;const gap=now-last,dt=Math.min(.1,gap/1000);last=now;if(!visible||document.hidden||!model||!warm)return;
    // Under sustained slow frames the render steps down in resolution, and back up once frames recover, but never
    // above a level that has already proved slow on this device.
-   if(quality!=='low'&&readyAt&&now-readyAt>1500){ema=ema*.9+dt*.1;const slow=ema>1/42&&ratio>minRatio,fast=ema<1/56&&ratio<maxRatio;
+   // A gap of a quarter second or more means the browser held the page back (a background tab or panel), not that this
+   // device is slow: skip it, so a stay in the background never leaves the model permanently at low resolution.
+   if(quality!=='low'&&readyAt&&now-readyAt>1500&&gap<250){ema=ema*.9+dt*.1;const slow=ema>1/42&&ratio>minRatio,fast=ema<1/56&&ratio<maxRatio;
     if(slow||fast){since=since||now;if(now-since>(slow?600:3000)){since=0;ema=1/60;if(slow)maxRatio=ratio-.25;ratio=slow?Math.max(minRatio,maxRatio):Math.min(maxRatio,ratio+.25);setRatio();el.dataset.ratio=String(ratio)}}else since=0}
    const {reality:r,focus:f}=state.current;if(r!==appliedReality){appliedReality=r;applyReality(r)}
    const reduced=motion.matches,target=Math.max(held||toggled||now<holdUntil?1:0,reduced?0:smooth(((scroll.current??0)-config.scroll[0])/config.scroll[1]));

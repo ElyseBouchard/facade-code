@@ -36,6 +36,9 @@ if(video&&heroBox){
  // If anything else pauses it (a power saver, a hidden tab), start it again as soon as the page is in view.
  video.addEventListener('pause',()=>{if(!document.hidden&&!away)setTimeout(play,200)});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)play()});
+ for(const type of ['focus','pageshow'])addEventListener(type,play);
+ // Some embedded browsers defer autoplay without any event to retry on; check once a second while the hero is in view.
+ setInterval(()=>{if(!document.hidden)play()},1000);
 }
 
 /* ---------- the headline scales to fit its column; the header is white over the footage ---------- */

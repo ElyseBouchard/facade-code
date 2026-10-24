@@ -1,9 +1,8 @@
 import {useEffect,useRef,type RefObject} from 'react';
-import Lenis from 'lenis';
-import 'lenis/dist/lenis.css';
 
-/** Shared with the preview drawer so it can pause page scrolling. */
-export const motionBus:{lenis:Lenis|null}={lenis:null};
+/** Shared with the preview drawer so it can pause page scrolling. The page scrolls natively here (no smooth-scroll
+ * library), so scrolling stays on the browser's compositor and never waits on the 3D views; nothing to pause. */
+export const motionBus:{lenis:{stop():void;start():void}|null}={lenis:null};
 const glyphs='WITHN*#/%^$@+';
 
 /** Keep scroll and pointer updates outside React's render cycle. */
@@ -17,7 +16,6 @@ export function useLandingMotion(root:RefObject<HTMLDivElement|null>,{introDone,
    teardown();
    if(media.matches){el.classList.remove('motion-ready');replay.current=()=>{};return}
    el.classList.add('motion-ready');
-   const lenis=new Lenis({lerp:.1,smoothWheel:true,syncTouch:false,anchors:{offset:-80},autoRaf:true});motionBus.lenis=lenis;
    const timers=new Map<HTMLElement,number>();
    /** Reveal left to right while the unrevealed tail cycles through glyphs. */
    const scramble=(target:HTMLElement)=>{
@@ -33,6 +31,10 @@ export function useLandingMotion(root:RefObject<HTMLDivElement|null>,{introDone,
     if(entry.isIntersecting){target.classList.add('is-visible');target.querySelectorAll<HTMLElement>('[data-scramble]').forEach(scramble);observer.unobserve(target)}
    }),{threshold:.12,rootMargin:'0px 0px -6% 0px'});
    el.querySelectorAll<HTMLElement>('[data-reveal]').forEach(target=>observer.observe(target));
+   // The small CSS loops (bobbing drawings, the ticker, the log, the pixel thumb) pause while their section is off
+   // screen; left running they keep the browser restyling the page every frame even when nothing visible moves.
+   const away=new IntersectionObserver(entries=>entries.forEach(entry=>entry.target.classList.toggle('is-away',!entry.isIntersecting)),{rootMargin:'10% 0px'});
+   el.querySelectorAll<HTMLElement>('section,footer').forEach(target=>away.observe(target));
    const parallax=[...el.querySelectorAll<HTMLElement>('[data-parallax]')],spinners=[...el.querySelectorAll<HTMLElement>('[data-spin]')];
    let frame=0,scrolled=false;
    const scroll=()=>{
@@ -68,7 +70,7 @@ export function useLandingMotion(root:RefObject<HTMLDivElement|null>,{introDone,
     square.addEventListener('animationend',()=>square.remove());tiles.append(square);while(tiles.children.length>7)tiles.firstElementChild?.remove();
    };
    el.addEventListener('pointermove',pointer);el.addEventListener('pointerleave',leave);el.addEventListener('pointerover',over);el.addEventListener('focusin',over);model?.addEventListener('pointermove',tile);window.addEventListener('scroll',scroll,{passive:true});scroll();
-   teardown=()=>{lenis.destroy();motionBus.lenis=null;observer.disconnect();cancelAnimationFrame(frame);timers.forEach((id,target)=>{clearInterval(id);target.textContent=target.dataset.scramble??''});el.removeEventListener('pointermove',pointer);el.removeEventListener('pointerleave',leave);el.removeEventListener('pointerover',over);el.removeEventListener('focusin',over);model?.removeEventListener('pointermove',tile);window.removeEventListener('scroll',scroll);el.classList.remove('motion-ready','has-pointer');replay.current=()=>{}};
+   teardown=()=>{observer.disconnect();away.disconnect();el.querySelectorAll('.is-away').forEach(target=>target.classList.remove('is-away'));cancelAnimationFrame(frame);timers.forEach((id,target)=>{clearInterval(id);target.textContent=target.dataset.scramble??''});el.removeEventListener('pointermove',pointer);el.removeEventListener('pointerleave',leave);el.removeEventListener('pointerover',over);el.removeEventListener('focusin',over);model?.removeEventListener('pointermove',tile);window.removeEventListener('scroll',scroll);el.classList.remove('motion-ready','has-pointer');replay.current=()=>{}};
   };
   setup();media.addEventListener('change',setup);return()=>{teardown();media.removeEventListener('change',setup)};
  },[root]);

@@ -3,6 +3,7 @@ import {Words} from './LandingDetails';
 import {languages,useCopy} from './i18n';
 import {COSTS,SAVED,TOTAL,type Story} from './costData';
 import {scramble} from './scramble';
+import {useStartWhenNear} from './WallHero';
 const SiteViewer=lazy(()=>import('./SiteViewer'));
 
 /** The study behind the change-order figures (2018, 161 school renovations, Las Vegas Valley). */
@@ -19,7 +20,7 @@ export function CostSection(){
  const {lang,t}=useCopy(),c=t.costs;
  const tag=languages.find(l=>l.code===lang)!.tag;
  const money=useMemo(()=>{const f=new Intl.NumberFormat(tag,{style:'currency',currency:'USD',currencyDisplay:'narrowSymbol',maximumFractionDigits:0});return (n:number)=>f.format(Math.round(n/100)*100)},[lang,tag]);
- const section=useRef<HTMLElement>(null),story=useRef<Story>({rise:[0,0,0],save:0});
+ const section=useRef<HTMLElement>(null),story=useRef<Story>({rise:[0,0,0],save:0}),start=useStartWhenNear(section,4500);
  const amounts=useRef<(HTMLElement|null)[]>([]),total=useRef<HTMLElement>(null);
  const [mode,setMode]=useState<'typical'|'savings'>('typical');
  const clock=useRef({start:-1,auto:true,mode:'typical' as 'typical'|'savings'});clock.current.mode=mode;
@@ -28,9 +29,11 @@ export function CostSection(){
  useEffect(()=>{const el=section.current;if(!el)return;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const seen=new IntersectionObserver(e=>{if(e[0]?.isIntersecting&&clock.current.start<0)clock.current.start=performance.now()},{threshold:.3});seen.observe(el);
-  let frame=0,last=performance.now();
+  // The count only runs while the section is on screen, so the page can rest everywhere else.
+  let frame=0,last=performance.now(),onScreen=false;
+  const watch=new IntersectionObserver(e=>{onScreen=!!e[0]?.isIntersecting;if(onScreen&&!frame){last=performance.now();frame=requestAnimationFrame(tick)}});
   const write=(node:HTMLElement|null,value:number)=>{if(!node||node.dataset.scrambling)return;const s=moneyRef.current(value);if(node.textContent!==s)node.textContent=s};
-  const tick=(now:number)=>{frame=requestAnimationFrame(tick);const dt=Math.min(.1,(now-last)/1000);last=now;const k=clock.current,s=story.current;
+  const tick=(now:number)=>{frame=onScreen?requestAnimationFrame(tick):0;const dt=Math.min(.1,(now-last)/1000);last=now;const k=clock.current,s=story.current;
    if(reduced){s.rise=[1,1,1];s.save=k.mode==='savings'?1:0}
    else if(k.start>=0){const time=(now-k.start)/1000;
     // Each surprise's lines draw up in turn; then, once, the savings view.
@@ -39,8 +42,8 @@ export function CostSection(){
     const goal=k.mode==='savings'&&s.rise[2]>=1?1:0;s.save+=Math.sign(goal-s.save)*Math.min(Math.abs(goal-s.save),dt/1.2)}
    COSTS.forEach((v,i)=>write(amounts.current[i],v*1000*ease(s.rise[i])));
    write(total.current,COSTS.reduce((a,v,i)=>a+v*1000*ease(s.rise[i]),0))};
-  frame=requestAnimationFrame(tick);
-  return()=>{cancelAnimationFrame(frame);seen.disconnect()}},[]);
+  watch.observe(el);
+  return()=>{cancelAnimationFrame(frame);seen.disconnect();watch.disconnect()}},[]);
 
  const choose=(next:'typical'|'savings')=>{const k=clock.current;k.auto=false;
   // Jumping to savings before the lines are drawn skips ahead to the drawn view.
@@ -57,7 +60,7 @@ export function CostSection(){
      <h2 id="cost-title"><Words text={c.title[0]}/><br/><Words text={c.title[1]} from={c.title[0].split(' ').length}/></h2>
      <p className="cost-lede">{c.lede}</p>
     </div>
-    <div className="cost-frame"><Suspense fallback={<p className="wall-status">{c.loading}</p>}><SiteViewer story={story} text={viewerText} money={money}/></Suspense></div>
+    <div className="cost-frame">{start?<Suspense fallback={<p className="wall-status">{c.loading}</p>}><SiteViewer story={story} text={viewerText} money={money}/></Suspense>:<p className="wall-status">{c.loading}</p>}</div>
    </div>
    <div className="cost-panel">
     <ol className="cost-rows">

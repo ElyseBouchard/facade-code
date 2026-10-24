@@ -102,10 +102,11 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
  useEffect(()=>{
   const el=host.current,labelHost=labelsRef.current,spans=labelEls.current;if(!el||!labelHost)return;let renderer:T.WebGLRenderer;
   try{renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'})}catch{setStatus({kind:'unavailable'});return}
-  const narrowQuery=matchMedia('(max-width: 767px)'),motion=matchMedia('(prefers-reduced-motion: reduce)');
-  // Rendered straight to the canvas (no post-processing), so full Retina density stays smooth; the frame-time governor
-  // below steps down on slower machines. Shader errors are only checked in development: the check stalls the page.
-  let maxRatio=Math.min(devicePixelRatio,narrowQuery.matches?1.5:1.75),ratio=maxRatio;const minRatio=Math.min(devicePixelRatio,1);
+  const motion=matchMedia('(prefers-reduced-motion: reduce)');
+  // Rendered straight to the canvas (no post-processing) at up to 1.5x: on this page the footage is decoding too, and
+  // 1.5x is a third fewer pixels than 1.75x for a difference that is hard to see. The frame-time governor below steps
+  // down further on slower machines. Shader errors are only checked in development: the check stalls the page.
+  let maxRatio=Math.min(devicePixelRatio,1.5),ratio=maxRatio;const minRatio=Math.min(devicePixelRatio,1);
   renderer.setPixelRatio(ratio);renderer.debug.checkShaderErrors=import.meta.env.DEV;renderer.setClearColor(0xffffff,0);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;el.appendChild(renderer.domElement);
   // Software renderers (no GPU) get a light path: no shadows or AO, lower resolution, fewer frames.
   const gl=renderer.getContext(),debug=gl.getExtension('WEBGL_debug_renderer_info'),gpu=debug?String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)):'';
@@ -138,18 +139,20 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
    // Wide screens push the wall right of the headline; tall screens push it below the copy.
    shiftX=aspect>1.15?config.view.shiftX:0;shiftY=aspect>1.15?.02:config.view.shiftY;camera.setViewOffset(w,h,-shiftX*w,-shiftY*h,w,h);camera.updateProjectionMatrix();spread=aspect<1.15?.68:1};
   const setRatio=()=>{renderer.setPixelRatio(ratio);resize()};
-  const observer=new ResizeObserver(resize);observer.observe(el);const seen=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??true});seen.observe(el);resize();
+  const observer=new ResizeObserver(resize);observer.observe(el);// Visible means at least a sliver on screen: a frame that only touches the viewport edge (the wall sits right under the
+  // full-screen footage) counts as intersecting, and would otherwise render the whole time the footage is watched.
+  const seen=new IntersectionObserver(entries=>{const e=entries[0];visible=!!e&&e.isIntersecting&&e.intersectionRatio>0},{threshold:[0,.001]});seen.observe(el);resize();
 
-  /** Compile every material variant the page can show (opaque and faded, and the diagram realities) before the first
-   * frame, in parallel where the browser supports it, then render once so the shadow shaders exist too. Scrolling into
-   * the section then never waits on a shader. */
+  /** Compile every material variant this page shows (opaque and faded) before the first frame, in parallel where the
+   * browser supports it, then render once so the shadow shaders exist too. Scrolling into the section then never waits
+   * on a shader. This site only shows the real-materials view (reality 0), so the diagram variants are not compiled:
+   * that halves the start-up shader work. */
   const warmUp=async()=>{
    const flip=(list:Entry[])=>{for(const {mat} of list){mat.transparent=!mat.transparent;mat.needsUpdate=true}};
-   const real=[...reals.values()],diagram=[...diagramMats.values()];
+   // The meshes still carry the file's own materials at this point: put the ones that are drawn on them first.
+   for(const part of parts)part.mesh.material=part.real;const real=[...reals.values()];
    await renderer.compileAsync(scene,camera);flip(real);await renderer.compileAsync(scene,camera);flip(real);
-   for(const part of parts)part.mesh.material=part.diagram;const tone=renderer.toneMapping;renderer.toneMapping=T.NoToneMapping;
-   await renderer.compileAsync(scene,camera);flip(diagram);await renderer.compileAsync(scene,camera);flip(diagram);
-   for(const part of parts)part.mesh.material=part.real;renderer.toneMapping=tone;renderer.render(scene,camera)};
+   renderer.render(scene,camera)};
   const draco=new DRACOLoader().setDecoderPath('/draco/');const loader=new GLTFLoader().setDRACOLoader(draco);
   loader.load(config.url,gltf=>{
    if(disposed)return;model=gltf.scene;if(config.merge)mergeParts(model,new Set(config.labels.flatMap(l=>l[3]?[plain(l[3])]:[])));

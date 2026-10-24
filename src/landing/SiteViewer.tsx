@@ -125,7 +125,9 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
    for(const g of [veg.crowns,veg.limbs]){const body=new T.Mesh(g,paper);body.add(new T.Mesh(g,hull));scene.add(body)}
    // Shaders compile in parallel before the first frame, so scrolling into the section never waits on them.
    void renderer.compileAsync(scene,camera).catch(()=>{}).then(()=>{if(disposed)return;renderer.render(scene,camera);warm=true;setStatus('ready');el.dataset.ready='true'})},undefined,()=>{if(!disposed)setStatus('failed')})};
-  const io=new IntersectionObserver(e=>{const entry=e[0];if(!entry)return;visible=entry.isIntersecting;if(!near&&entry.isIntersecting){near=true;load()}},{rootMargin:'900px 0px'});io.observe(el);
+  // Load a screen early; draw only while at least a sliver is actually on screen.
+  const io=new IntersectionObserver(e=>{const entry=e[0];if(!entry)return;if(!near&&entry.isIntersecting){near=true;load()}},{rootMargin:'900px 0px'});io.observe(el);
+  const seen=new IntersectionObserver(e=>{const entry=e[0];visible=!!entry&&entry.isIntersecting&&entry.intersectionRatio>0},{threshold:[0,.001]});seen.observe(el);
 
   // ---- per frame ----
   const v=new T.Vector3(),ray=new T.Raycaster(),hidden=[0,0,0];let probe=0;
@@ -169,7 +171,7 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
     if(saving){place2(savedLabel,ax+(.5-saving/n/2)*fw,ay-28*sv-14,sv);setAmount(savedLabel,SAVED)}
    }};
   frame=requestAnimationFrame(draw);
-  return()=>{disposed=true;cancelAnimationFrame(frame);ro.disconnect();io.disconnect();
+  return()=>{disposed=true;cancelAnimationFrame(frame);ro.disconnect();io.disconnect();seen.disconnect();
    canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',up);canvas.removeEventListener('keydown',key);
    scene.traverse(o=>{const m=o as T.Mesh;if(m.geometry)m.geometry.dispose()});for(const m of owned)m.dispose();
    draco.dispose();renderer.dispose();canvas.remove();labelHost.replaceChildren()};

@@ -21,16 +21,20 @@ import {LogoMark} from './landing/Logo';
 const FIRST='https://facade.build';
 const t=copy.en,language={lang:'en' as const,t,setLang:()=>{}};
 
-/* ---------- the footage plays as soon as the page opens, and keeps looping ---------- */
-const video=document.querySelector<HTMLVideoElement>('.v2-video');
-if(video){
+/* ---------- the footage plays as soon as the page opens, and keeps looping whenever it can be seen ---------- */
+const video=document.querySelector<HTMLVideoElement>('.v2-video'),heroBox=document.querySelector('.v2-hero');
+if(video&&heroBox){
  video.muted=video.defaultMuted=true;
- const play=()=>{if(video.paused)void video.play().catch(()=>{})};
+ // Once the hero is a screen out of view the footage rests, so the 3D sections below don't share the machine with a
+ // video decoder; it is playing again before the hero scrolls back in.
+ let away=false;
+ const play=()=>{if(video.paused&&!away)void video.play().catch(()=>{})};
  play();
+ new IntersectionObserver(([e])=>{away=!e?.isIntersecting;if(away)video.pause();else play()},{rootMargin:'100% 0px'}).observe(heroBox);
  // Some browsers hold autoplay (iPhone Low Power Mode, "never auto-play" settings) until the first touch, scroll or key.
  for(const type of ['pointerdown','touchstart','keydown','scroll'])addEventListener(type,play,{passive:true});
  // If anything else pauses it (a power saver, a hidden tab), start it again as soon as the page is in view.
- video.addEventListener('pause',()=>{if(!document.hidden)setTimeout(play,200)});
+ video.addEventListener('pause',()=>{if(!document.hidden&&!away)setTimeout(play,200)});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)play()});
 }
 

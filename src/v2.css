@@ -56,6 +56,9 @@
 .lab-site .wall-key .legend-item, .lab-site .wall-key .legend-item:hover { grid-template-columns: 10px 1fr; padding-left: 0; cursor: default; border-bottom-color: var(--soft); }
 .lab-site .wall-key:hover .legend-item:not(:hover) { opacity: 1; }
 
+/* ---------- loops rest while their section is off screen (useLandingMotion toggles .is-away) ---------- */
+.lab-site .is-away *, .lab-site .is-away *::before, .lab-site .is-away *::after { animation-play-state: paused !important; }
+
 /* ---------- footer: the mark beside the wordmark ---------- */
 .footer-logo { display: inline-flex; align-items: center; gap: .3em; }
 .footer-logo .logo-mark { height: max(32px, 2.9vw); width: auto; }

@@ -33,8 +33,9 @@ if(video&&heroBox){
  if(debugMode)for(const type of ['loadedmetadata','loadeddata','canplay','playing','pause','waiting','stalled','suspend','error','emptied'])video.addEventListener(type,()=>diag(`video ${type}${type==='error'?' code '+video.error?.code:''}`));
  play();
  new IntersectionObserver(([e])=>{away=!e?.isIntersecting;if(away)video.pause();else play()},{rootMargin:'100% 0px'}).observe(heroBox);
- // Some browsers hold autoplay (iPhone Low Power Mode, "never auto-play" settings) until the first touch, scroll or key.
- for(const type of ['pointerdown','touchstart','keydown','scroll'])addEventListener(type,play,{passive:true});
+ // Some browsers hold autoplay (Low Power Mode, Safari's "Never Auto-Play") until the visitor interacts: Safari only
+ // counts a click, a key or the end of a touch as permission, so listen for those as well as the first scroll.
+ for(const type of ['pointerdown','pointerup','mousedown','click','touchstart','touchend','keydown','scroll'])addEventListener(type,play,{passive:true});
  // If anything else pauses it (a power saver, a hidden tab), start it again as soon as the page is in view.
  video.addEventListener('pause',()=>{if(!document.hidden&&!away)setTimeout(play,200)});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)play()});

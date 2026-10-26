@@ -2,7 +2,7 @@ import {useEffect,useRef,useState,type RefObject} from 'react';
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
-import {debugMode,diag,diagCanvas,diagFrame} from './diag';
+import {debugMode,diag,diagCanvas,diagFrame,diagView} from './diag';
 import {guardContext,StillPicture} from './stills';
 import {LineSegments2} from 'three/addons/lines/LineSegments2.js';
 import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js';
@@ -68,7 +68,7 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.debug.checkShaderErrors=import.meta.env.DEV||debugMode;renderer.setClearColor(0xffffff,0);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.NoToneMapping;
   const gl=renderer.getContext();diagCanvas('3d numbers',renderer.domElement,gl);diag('3d numbers: renderer created');let drawn=0;
   // Lost WebGL (straight away, or again soon after) switches to a still of this view; see stills.tsx.
-  const fallBack=()=>{if(disposed)return;diag('3d numbers: falling back to a still');disposed=true;cancelAnimationFrame(frame);try{renderer.dispose()}catch{/* already gone */}renderer.domElement.remove();labelHost.replaceChildren();setStatus('still')};
+  const fallBack=()=>{if(disposed)return;diag('3d numbers: falling back to a still');diagView('3d numbers',{still:true});disposed=true;cancelAnimationFrame(frame);try{renderer.dispose()}catch{/* already gone */}renderer.domElement.remove();labelHost.replaceChildren();setStatus('still')};
   const guard=guardContext(renderer.domElement,()=>fallBack());
   const canvas=renderer.domElement;canvasRef.current=canvas;canvas.setAttribute('role','img');canvas.setAttribute('aria-label',words.current.aria);canvas.tabIndex=0;el.appendChild(canvas);
   const scene=new T.Scene(),camera=new T.PerspectiveCamera(34,1,.5,500);
@@ -130,7 +130,7 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
    const veg=vegetation(trees,11);
    for(const g of [veg.crowns,veg.limbs]){const body=new T.Mesh(g,paper);body.add(new T.Mesh(g,hull));scene.add(body)}
    // Shaders compile in parallel before the first frame, so scrolling into the section never waits on them.
-   diag('3d numbers: model loaded, compiling');void renderer.compileAsync(scene,camera).catch(e=>diag(`3d numbers: compile failed ${String(e)}`)).then(()=>{if(disposed)return;diag('3d numbers: ready');guard.ready();renderer.render(scene,camera);warm=true;setStatus('ready');el.dataset.ready='true'})},undefined,()=>fallBack())};
+   diag('3d numbers: model loaded, compiling');void renderer.compileAsync(scene,camera).catch(e=>diag(`3d numbers: compile failed ${String(e)}`)).then(()=>{if(disposed)return;diag('3d numbers: ready');renderer.render(scene,camera);warm=true;setStatus('ready');el.dataset.ready='true'})},undefined,()=>fallBack())};
   // Load a screen early; draw only while at least a sliver is actually on screen.
   const io=new IntersectionObserver(e=>{const entry=e[0];if(!entry)return;if(!near&&entry.isIntersecting){near=true;load()}},{rootMargin:'900px 0px'});io.observe(el);
   const seen=new IntersectionObserver(e=>{const entry=e[0];visible=!!entry&&entry.isIntersecting&&entry.intersectionRatio>0},{threshold:[0,.001]});seen.observe(el);

@@ -12,7 +12,7 @@ export function diagCanvas(name:string,canvas:HTMLCanvasElement,gl:WebGLRenderin
  if(!debugMode)return;
  const info=gl.getExtension('WEBGL_debug_renderer_info');
  diagView(name,{gpu:info?gl.getParameter(info.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),webgl2:typeof WebGL2RenderingContext!=='undefined'&&gl instanceof WebGL2RenderingContext,parallelCompile:!!gl.getExtension('KHR_parallel_shader_compile'),maxTexture:gl.getParameter(gl.MAX_TEXTURE_SIZE)});
- canvas.addEventListener('webglcontextlost',()=>{diag(`${name}: WebGL context LOST`);diagView(name,{lost:true})});
+ let losses=0;canvas.addEventListener('webglcontextlost',()=>{diag(`${name}: WebGL context LOST`);diagView(name,{lost:true,losses:++losses})});
  canvas.addEventListener('webglcontextrestored',()=>{diag(`${name}: WebGL context restored`);diagView(name,{lost:false})});
 }
 /** After a render: GL error code and whether the centre pixels hold anything (readPixels on the drawn buffer). */
@@ -36,4 +36,11 @@ if(debugMode){
   const video=v?`video paused=${v.paused} t=${v.currentTime.toFixed(1)} ready=${v.readyState} net=${v.networkState} err=${v.error?.code??'-'} src=${v.currentSrc.split('/').pop()}`:'no video';
   box.textContent=`${navigator.userAgent}\n${video}\n${Object.entries(store.views).map(([k,s])=>`${k}: ${JSON.stringify(s)}`).join('\n')}\n--\n${[...store.first,...store.events].slice(0,30).map(e=>`${(e.t/1000).toFixed(1)}s ${e.msg}`).join('\n')}`};
  addEventListener('DOMContentLoaded',()=>document.body.append(box));setInterval(draw,1000);
+ const params=new URLSearchParams(location.search);
+ // ?debug=title: a short summary in the tab title every second, for a browser driven by AppleScript (which can read
+ // titles without running script in the page). ?scrollto=inside:0.5 scrolls to that pinned progress after 6 s.
+ let presented=0;addEventListener('DOMContentLoaded',()=>{const v=document.querySelector<HTMLVideoElement>('.v2-video');if(v&&'requestVideoFrameCallback' in v){const cb=()=>{presented++;v.requestVideoFrameCallback(cb)};v.requestVideoFrameCallback(cb)}});
+ if(params.get('debug')==='title')setInterval(()=>{const v=document.querySelector<HTMLVideoElement>('.v2-video'),views=Object.fromEntries(Object.entries(store.views).map(([k,s])=>[k.replace('3d ',''),{f:s.frames??0,lit:s.litSamples??'-',loss:s.losses??0,still:s.still??false}]));
+  document.title=JSON.stringify({y:Math.round(scrollY),video:v?{paused:v.paused,t:+v.currentTime.toFixed(1),shown:presented}:null,views})},1000);
+ const to=params.get('scrollto');if(to){const [id,p]=to.split(':');setTimeout(()=>{const e=document.getElementById(id);if(!e)return;const r=Math.max(innerHeight*.6,e.offsetHeight-innerHeight);window.scrollTo({top:e.getBoundingClientRect().top+scrollY+r*Number(p),behavior:'instant'})},6000)}
 }

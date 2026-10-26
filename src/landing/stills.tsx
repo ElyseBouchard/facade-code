@@ -1,17 +1,18 @@
 import {useEffect,useRef,type RefObject} from 'react';
 
-/* When a browser can't keep a WebGL context (it is lost straight away, or again soon after it comes back), the 3D views
-   give up instead of looping, and show still images rendered from the same views (public/stills, made by
-   scripts/capture-stills.mjs). Safari with broken WebGL loses and restores a context thousands of times a second if the
-   page keeps asking for it back, which is what three.js does on every loss: that stalls the whole page. */
+/* When a browser can't keep a WebGL context at all, the 3D views give up instead of looping, and show still images
+   rendered from the same views (public/stills, made by scripts/capture-stills.mjs). A browser with no working WebGL
+   loses and restores a context thousands of times a second if the page keeps asking for it back, which is what
+   three.js does on every loss: that stalls the whole page. A single loss is left to three.js to recover, as on
+   facade.build. */
 
-/** Calls `onFail` once if the context is lost before `ready()` is called, or twice within five seconds after. */
+/** Calls `onFail` once if the context is lost three times within three seconds: a loop, not a one-off. */
 export function guardContext(canvas:HTMLCanvasElement,onFail:()=>void){
- let ready=false,lastLoss=-Infinity,failed=false;
- const lost=()=>{const now=performance.now();if(!ready||now-lastLoss<5000)fail();lastLoss=now};
+ const losses:number[]=[];let failed=false;
+ const lost=()=>{const now=performance.now();losses.push(now);while(losses.length&&now-losses[0]>3000)losses.shift();if(losses.length>=3)fail()};
  const fail=()=>{if(failed)return;failed=true;canvas.removeEventListener('webglcontextlost',lost);onFail()};
  canvas.addEventListener('webglcontextlost',lost);
- return {ready(){ready=true},stop(){canvas.removeEventListener('webglcontextlost',lost)}};
+ return {stop(){canvas.removeEventListener('webglcontextlost',lost)}};
 }
 
 const smooth=(x:number)=>{const t=Math.min(1,Math.max(0,x));return t*t*(3-2*t)};

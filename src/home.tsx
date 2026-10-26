@@ -1,3 +1,4 @@
+import {diag,debugMode} from './landing/diag';
 import './landing/style.css';
 import './landing/reference-theme.css';
 import './landing/lab-theme.css';
@@ -28,7 +29,8 @@ if(video&&heroBox){
  // Once the hero is a screen out of view the footage rests, so the 3D sections below don't share the machine with a
  // video decoder; it is playing again before the hero scrolls back in.
  let away=false;
- const play=()=>{if(video.paused&&!away)void video.play().catch(()=>{})};
+ const play=()=>{if(video.paused&&!away)void video.play().catch((e:Error)=>diag(`video.play() refused: ${e.name} ${e.message}`))};
+ if(debugMode)for(const type of ['loadedmetadata','loadeddata','canplay','playing','pause','waiting','stalled','suspend','error','emptied'])video.addEventListener(type,()=>diag(`video ${type}${type==='error'?' code '+video.error?.code:''}`));
  play();
  new IntersectionObserver(([e])=>{away=!e?.isIntersecting;if(away)video.pause();else play()},{rootMargin:'100% 0px'}).observe(heroBox);
  // Some browsers hold autoplay (iPhone Low Power Mode, "never auto-play" settings) until the first touch, scroll or key.

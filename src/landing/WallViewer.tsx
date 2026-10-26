@@ -2,6 +2,8 @@ import {useEffect,useRef,useState,type RefObject} from 'react';
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
+import {debugMode,diag,diagCanvas,diagFrame,diagView} from './diag';
+import {ExplodedStill,guardContext} from './stills';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {hardwareParts} from './hardware-parts';
@@ -88,7 +90,8 @@ function sheetLines(b:T.Box3){
 
 /** Words the viewer shows, in the page's language. Labels are keyed by layer name (wall) or part id (kit). */
 export type ViewerText={aria:string;loading:string;unavailable:string;failed:string;cursor:string;labels:Record<string,string>};
-type Status={kind:'loading'|'unavailable'|'failed'|'ready';pct?:number};
+// 'still': WebGL or the model failed, so the view shows images rendered from it instead (see stills.tsx).
+type Status={kind:'loading'|'still'|'ready';pct?:number};
 
 /** A model on a slow turntable; press and drag, or scroll, to separate it into an exploded axonometric. */
 export default function ExplodedViewer({model:which='wall',reality,focus,scroll,onExploded,text}:{model?:'wall'|'kit';reality:number;focus:WallSystem|null;scroll:RefObject<number>;onExploded?:(exploded:boolean)=>void;text?:ViewerText}){
@@ -101,16 +104,20 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
  const state=useRef({reality,focus,onExploded});state.current={reality,focus,onExploded};
  useEffect(()=>{
   const el=host.current,labelHost=labelsRef.current,spans=labelEls.current;if(!el||!labelHost)return;let renderer:T.WebGLRenderer;
-  try{renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'})}catch{setStatus({kind:'unavailable'});return}
+  try{renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'})}catch{setStatus({kind:'still'});return}
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   // Rendered straight to the canvas (no post-processing) at up to 1.5x: on this page the footage is decoding too, and
   // 1.5x is a third fewer pixels than 1.75x for a difference that is hard to see. The frame-time governor below steps
   // down further on slower machines. Shader errors are only checked in development: the check stalls the page.
   let maxRatio=Math.min(devicePixelRatio,1.5),ratio=maxRatio;const minRatio=Math.min(devicePixelRatio,1);
-  renderer.setPixelRatio(ratio);renderer.debug.checkShaderErrors=import.meta.env.DEV;renderer.setClearColor(0xffffff,0);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;el.appendChild(renderer.domElement);
+  renderer.setPixelRatio(ratio);renderer.debug.checkShaderErrors=import.meta.env.DEV||debugMode;renderer.setClearColor(0xffffff,0);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;el.appendChild(renderer.domElement);
   // Software renderers (no GPU) get a light path: no shadows or AO, lower resolution, fewer frames.
   const gl=renderer.getContext(),debug=gl.getExtension('WEBGL_debug_renderer_info'),gpu=debug?String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)):'';
   const quality:'full'|'low'=/swiftshader|llvmpipe|software|basic render/i.test(gpu)?'low':'full';el.dataset.quality=quality;
+  const tag=`3d ${which}`;diagCanvas(tag,renderer.domElement,gl);diagView(tag,{quality});diag(`${tag}: renderer created`);let drawn=0;
+  // Lost WebGL (straight away, or again soon after) switches to the stills; three would otherwise ask for it back forever.
+  const fallBack=()=>{if(disposed)return;diag(`${tag}: falling back to stills`);disposed=true;cancelAnimationFrame(frame);try{renderer.dispose()}catch{/* already gone */}renderer.domElement.remove();labelHost.replaceChildren();setStatus({kind:'still'})};
+  const guard=guardContext(renderer.domElement,()=>fallBack());
   if(quality==='low'){maxRatio=ratio=.75;renderer.setPixelRatio(ratio);renderer.shadowMap.enabled=false}
   const canvas=renderer.domElement;canvasRef.current=canvas;canvas.tabIndex=0;canvas.setAttribute('role','img');canvas.setAttribute('aria-label',words.current?.aria??config.aria);
   // The canvas is transparent so the page stays pure white (or dark in Cyber) behind a tone-mapped render.
@@ -182,7 +189,7 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
    // AO reach, shadow offsets and dash lengths follow the model's size (the kit is a tenth of the wall).
    const R=radiusHome;key.shadow.normalBias=R*.0085;guideMaterial.dashSize=R*.013;guideMaterial.gapSize=R*.015;camera.near=R*.02;camera.far=R*60;camera.updateProjectionMatrix();
    const s=radiusOpen*1.25;Object.assign(key.shadow.camera,{left:-s,right:s,top:s,bottom:-s,near:.5,far:30});key.shadow.camera.updateProjectionMatrix();
-   void warmUp().catch(()=>{}).then(()=>{if(disposed)return;warm=true;readyAt=performance.now();setStatus({kind:'ready'});el.dataset.ready='true'})},progress=>{if(progress.total)setStatus({kind:'loading',pct:Math.round(progress.loaded/progress.total*100)})},()=>{if(!disposed)setStatus({kind:'failed'})});
+   diag(`${tag}: model loaded, compiling`);void warmUp().catch(e=>diag(`${tag}: warm-up failed ${String(e)}`)).then(()=>{if(disposed)return;diag(`${tag}: ready`);guard.ready();warm=true;readyAt=performance.now();setStatus({kind:'ready'});el.dataset.ready='true'})},progress=>{if(progress.total&&!disposed)setStatus({kind:'loading',pct:Math.round(progress.loaded/progress.total*100)})},e=>{diag(`${tag}: model failed ${String((e as Error)?.message??e)}`);fallBack()});
 
   const setLayers=(amount:number,scale=spread)=>{for(const layer of layers){const t=smooth((amount-layer.delay)/(1-.32));layer.node.position.copy(layer.home).addScaledVector(layer.vector,t*scale)}};
   const progressOf=(layer:Layer)=>smooth((explode-layer.delay)/(1-.32));
@@ -241,12 +248,13 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
    key.position.set(-4.5,6.5,5.5).applyAxisAngle(up,azimuth*.6);
    spin.updateMatrixWorld(true);placeLabels();
    const exploded=explode>.5;if(exploded!==lastExploded){lastExploded=exploded;state.current.onExploded?.(exploded)}
-   renderer.render(scene,camera)};
+   renderer.render(scene,camera);diagFrame(tag,gl,++drawn)};
   frame=requestAnimationFrame(draw);
-  return()=>{disposed=true;cancelAnimationFrame(frame);observer.disconnect();seen.disconnect();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',lift);canvas.removeEventListener('pointercancel',lift);canvas.removeEventListener('keydown',keyDown);
+  return()=>{disposed=true;guard.stop();cancelAnimationFrame(frame);observer.disconnect();seen.disconnect();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',lift);canvas.removeEventListener('pointercancel',lift);canvas.removeEventListener('keydown',keyDown);
    scene.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.LineSegments)o.geometry.dispose()});for(const {mat} of reals.values())mat.dispose();for(const {mat} of diagramMats.values())mat.dispose();for(const m of edgeMats.values())m.dispose();(ground.material as T.Material).dispose();guideMaterial.dispose();sheetLineMat.dispose();textures.noise.dispose();textures.spangle.dispose();
    draco.dispose();environment.dispose();renderer.dispose();canvas.remove();labelHost.replaceChildren();spans.clear()};
  },[scroll]);
- const message=status.kind==='ready'?'':status.kind==='loading'?`${text?.loading??'LOADING'}${status.pct===undefined?'':` ${status.pct}%`}`:status.kind==='unavailable'?text?.unavailable??'3D VIEW UNAVAILABLE IN THIS BROWSER':text?.failed??'MODEL UNAVAILABLE';
+ if(status.kind==='still')return <div className="wall-viewer is-still" role="img" aria-label={text?.aria??config.aria}><ExplodedStill name={which} scroll={scroll} range={config.scroll} onExploded={onExploded}/></div>;
+ const message=status.kind==='loading'?`${text?.loading??'LOADING'}${status.pct===undefined?'':` ${status.pct}%`}`:'';
  return <div className="wall-viewer" data-cursor={text?.cursor??'DRAG TO EXPLODE'}><div ref={host} className="wall-canvas"/><div ref={labelsRef} className="wall-labels" aria-hidden="true"/>{message&&<p className="wall-status" role="status">{message}</p>}</div>
 }

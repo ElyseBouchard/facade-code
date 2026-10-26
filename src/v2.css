@@ -56,6 +56,10 @@
 .lab-site .wall-key .legend-item, .lab-site .wall-key .legend-item:hover { grid-template-columns: 10px 1fr; padding-left: 0; cursor: default; border-bottom-color: var(--soft); }
 .lab-site .wall-key:hover .legend-item:not(:hover) { opacity: 1; }
 
+/* ---------- stills in place of a 3D view the browser can't draw (stills.tsx) ---------- */
+.viewer-still, .viewer-still > span, .viewer-still picture { position: absolute; inset: 0; display: block; }
+.viewer-still img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
 /* ---------- loops rest while their section is off screen (useLandingMotion toggles .is-away) ---------- */
 .lab-site .is-away *, .lab-site .is-away *::before, .lab-site .is-away *::after { animation-play-state: paused !important; }
 

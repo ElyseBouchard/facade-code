@@ -2,6 +2,8 @@ import {useEffect,useRef,useState,type RefObject} from 'react';
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
+import {debugMode,diag,diagCanvas,diagFrame} from './diag';
+import {guardContext,StillPicture} from './stills';
 import {LineSegments2} from 'three/addons/lines/LineSegments2.js';
 import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js';
 import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
@@ -50,7 +52,7 @@ function outline(width:number,color:string,opacity:number){
 
 /** The renovation site drawn in line, with a fan of red lines rising from where each change order comes from. */
 export default function SiteViewer({story,text,money}:{story:RefObject<Story>;text:SiteText;money:(n:number)=>string}){
- const host=useRef<HTMLDivElement>(null),labelsRef=useRef<HTMLDivElement>(null);const [status,setStatus]=useState<'idle'|'loading'|'ready'|'failed'|'unavailable'>('idle');
+ const host=useRef<HTMLDivElement>(null),labelsRef=useRef<HTMLDivElement>(null);const [status,setStatus]=useState<'idle'|'loading'|'ready'|'still'>('idle');
  const words=useRef(text);words.current=text;const fmt=useRef(money);fmt.current=money;const canvasRef=useRef<HTMLCanvasElement|null>(null);
  const textKey=JSON.stringify(text);
  // Labels are plain DOM, refreshed when the language changes; their amounts are written each frame.
@@ -60,10 +62,14 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
    if(s)s.textContent=kind==='saved'?t.savedName:t.names[Number(i)]})},[textKey]);
  useEffect(()=>{
   const el=host.current,labelHost=labelsRef.current;if(!el||!labelHost)return;let renderer:T.WebGLRenderer;
-  try{renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'})}catch{setStatus('unavailable');return}
+  try{renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'})}catch{setStatus('still');return}
   const motion=matchMedia('(prefers-reduced-motion: reduce)'),narrow=matchMedia('(max-width: 767px)');
   // 1.5x keeps the hairlines crisp on Retina at well under half the pixels of 2x; shader errors are only checked in development.
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.debug.checkShaderErrors=import.meta.env.DEV;renderer.setClearColor(0xffffff,0);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.NoToneMapping;
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.debug.checkShaderErrors=import.meta.env.DEV||debugMode;renderer.setClearColor(0xffffff,0);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.NoToneMapping;
+  const gl=renderer.getContext();diagCanvas('3d numbers',renderer.domElement,gl);diag('3d numbers: renderer created');let drawn=0;
+  // Lost WebGL (straight away, or again soon after) switches to a still of this view; see stills.tsx.
+  const fallBack=()=>{if(disposed)return;diag('3d numbers: falling back to a still');disposed=true;cancelAnimationFrame(frame);try{renderer.dispose()}catch{/* already gone */}renderer.domElement.remove();labelHost.replaceChildren();setStatus('still')};
+  const guard=guardContext(renderer.domElement,()=>fallBack());
   const canvas=renderer.domElement;canvasRef.current=canvas;canvas.setAttribute('role','img');canvas.setAttribute('aria-label',words.current.aria);canvas.tabIndex=0;el.appendChild(canvas);
   const scene=new T.Scene(),camera=new T.PerspectiveCamera(34,1,.5,500);
   // A white architectural model: soft light so planes read apart, drawn over with black hidden-line edges.
@@ -108,7 +114,7 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
   // ---- model: fetched once the section is close, so it never slows the top of the page ----
   const hot:T.Vector3[]=[new T.Vector3(-5.35,1.85,3.9),new T.Vector3(2.5,5.65,3.9),new T.Vector3(6.2,9.75,-1.5)];
   const draco=new DRACOLoader().setDecoderPath('/draco/');const loader=new GLTFLoader().setDRACOLoader(draco);let model:T.Object3D|undefined,site:T.Mesh|undefined;
-  const load=()=>{setStatus('loading');loader.load('/models/renovation-site.glb',gltf=>{if(disposed)return;model=gltf.scene;
+  const load=()=>{if(disposed)return;setStatus('loading');loader.load('/models/renovation-site.glb',gltf=>{if(disposed)return;model=gltf.scene;
    const meshes:T.Mesh[]=[],trees:{p:T.Vector3;s:number}[]=[];
    model.traverse(o=>{if((o as T.Mesh).isMesh)meshes.push(o as T.Mesh);
     const i=HOTSPOTS.indexOf(o.name);if(i>=0)o.getWorldPosition(hot[i]);
@@ -124,7 +130,7 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
    const veg=vegetation(trees,11);
    for(const g of [veg.crowns,veg.limbs]){const body=new T.Mesh(g,paper);body.add(new T.Mesh(g,hull));scene.add(body)}
    // Shaders compile in parallel before the first frame, so scrolling into the section never waits on them.
-   void renderer.compileAsync(scene,camera).catch(()=>{}).then(()=>{if(disposed)return;renderer.render(scene,camera);warm=true;setStatus('ready');el.dataset.ready='true'})},undefined,()=>{if(!disposed)setStatus('failed')})};
+   diag('3d numbers: model loaded, compiling');void renderer.compileAsync(scene,camera).catch(e=>diag(`3d numbers: compile failed ${String(e)}`)).then(()=>{if(disposed)return;diag('3d numbers: ready');guard.ready();renderer.render(scene,camera);warm=true;setStatus('ready');el.dataset.ready='true'})},undefined,()=>fallBack())};
   // Load a screen early; draw only while at least a sliver is actually on screen.
   const io=new IntersectionObserver(e=>{const entry=e[0];if(!entry)return;if(!near&&entry.isIntersecting){near=true;load()}},{rootMargin:'900px 0px'});io.observe(el);
   const seen=new IntersectionObserver(e=>{const entry=e[0];visible=!!entry&&entry.isIntersecting&&entry.intersectionRatio>0},{threshold:[0,.001]});seen.observe(el);
@@ -146,7 +152,7 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
    if(!dragging){velocity*=Math.exp(-dt*3.5);azimuth+=velocity}
    // Until someone takes over, drift a little either side so the depth reads.
    place(azimuth+(reduced||touched?0:Math.sin(now/1000*.16)*.08),elevation,dist);
-   renderer.render(scene,camera);
+   renderer.render(scene,camera);diagFrame('3d numbers',gl,++drawn);
    // Every few frames, check whether the building stands between the camera and each origin.
    if(++probe%6===0)for(let i=0;i<3;i++){const dir=hot[i].clone().sub(camera.position),len=dir.length();ray.set(camera.position,dir.normalize());ray.far=len-.4;hidden[i]=site&&ray.intersectObject(site,false).length?1:0}
    const sv=smooth(s.save),phase=reduced?0:now/1000*.6,sp=Math.min(9,W*.17/LINES[0]);
@@ -171,12 +177,13 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
     if(saving){place2(savedLabel,ax+(.5-saving/n/2)*fw,ay-28*sv-14,sv);setAmount(savedLabel,SAVED)}
    }};
   frame=requestAnimationFrame(draw);
-  return()=>{disposed=true;cancelAnimationFrame(frame);ro.disconnect();io.disconnect();seen.disconnect();
+  return()=>{disposed=true;guard.stop();cancelAnimationFrame(frame);ro.disconnect();io.disconnect();seen.disconnect();
    canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',up);canvas.removeEventListener('keydown',key);
    scene.traverse(o=>{const m=o as T.Mesh;if(m.geometry)m.geometry.dispose()});for(const m of owned)m.dispose();
    draco.dispose();renderer.dispose();canvas.remove();labelHost.replaceChildren()};
  },[story]);
- const message=status==='loading'?text.loading:status==='failed'?text.failed:status==='unavailable'?text.unavailable:'';
+ if(status==='still')return <div className="site-viewer is-still" role="img" aria-label={text.aria}><StillPicture name="site" className="viewer-still"/><p className="site-legend" aria-hidden="true"><i/>{text.legend}</p></div>;
+ const message=status==='loading'?text.loading:'';
  return <div className="site-viewer" data-cursor={text.cursor}><div ref={host} className="site-canvas"/><div ref={labelsRef} className="site-labels" aria-hidden="true"/>
   <p className="site-legend" aria-hidden="true"><i/>{text.legend}</p>{message&&<p className="wall-status" role="status">{message}</p>}</div>
 }

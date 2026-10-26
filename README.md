@@ -12,6 +12,12 @@ below are React + three.js (`src/home.tsx`, components in `src/landing`). The Ab
 - 3D models, textures and the Draco decoder in `public/models`, `public/hardware`, `public/texture` and `public/draco`
   come from the first site's repository.
 - Logo: `public/logo-mark.svg` and `src/landing/logo-path.ts` (the same path is inlined in both HTML headers).
+- Stills: when a browser can't keep a WebGL context, the 3D views show `public/stills/*.webp` instead (assembled and
+  taken apart, desktop and `-m` phone framing). Re-render them after changing a model or its view:
+  `npm run build && npx vite preview --port 5201 &`, then `node scripts/capture-stills.mjs` (PNG into `assets/stills`),
+  then convert to WebP (quality 82, alpha kept) into `public/stills`.
+- Diagnostics: open any page with `?debug` for an overlay of errors, footage events and each 3D view's WebGL state
+  (also on `window.__diag`).
 
 The demo, hardware lab, savings calculator and waitlist stay on the first site (facade.build) and are linked from here.
 The scanner is a concept model and the demo runs on synthetic data; the copy says so.

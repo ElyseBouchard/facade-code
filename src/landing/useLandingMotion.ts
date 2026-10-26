@@ -56,7 +56,6 @@ export function useLandingMotion(root:RefObject<HTMLDivElement|null>,{introDone,
    const leave=()=>el.classList.remove('has-pointer');
    const over=(event:Event)=>{
     const target=event.target as Element;
-    const scrambler=target.closest<HTMLElement>('[data-scramble]');if(scrambler&&!timers.has(scrambler))scramble(scrambler);
     if(!cursor)return;const hint=target.closest<HTMLElement>('[data-cursor]')?.dataset.cursor??'';
     cursor.classList.toggle('is-active',!!target.closest('a,button,summary,[tabindex="0"],canvas'));cursor.classList.toggle('has-label',!!hint);if(label&&label.textContent!==hint)label.textContent=hint;
    };

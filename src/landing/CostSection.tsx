@@ -2,7 +2,6 @@ import {forwardRef,lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react'
 import {Words} from './LandingDetails';
 import {languages,useCopy} from './i18n';
 import {COSTS,SAVED,TOTAL,type Story} from './costData';
-import {scramble} from './scramble';
 import {useStartWhenNear} from './WallHero';
 const SiteViewer=lazy(()=>import('./SiteViewer'));
 
@@ -13,7 +12,7 @@ const ease=(x:number)=>{const t=clamp(x);return t*t*(3-2*t)};
 
 /** A dollar amount: read once by screen readers, and flickering through symbols on hover. */
 const Amount=forwardRef<HTMLSpanElement,{value:string}>(({value},ref)=><strong dir="ltr" className="amount">
- <span className="sr-only">{value}</span><span aria-hidden="true" ref={ref} onPointerEnter={e=>scramble(e.currentTarget)}>{value}</span></strong>);
+ <span className="sr-only">{value}</span><span aria-hidden="true" ref={ref}>{value}</span></strong>);
 
 /** Third screen: what surprises add to a $1M renovation, drawn on a renovation site, and an illustrative saving. */
 export function CostSection(){
@@ -78,7 +77,7 @@ export function CostSection(){
      <p className="cost-net">{c.net}</p>
     </div>
     <p className="cost-source">{c.source} <a href={STUDY} target="_blank" rel="noreferrer">{c.sourceLink}</a></p>
-    <div className="cost-links"><a className="cost-calc" href="https://facade.build/savings">{c.calc}</a><button className="cost-replay" onClick={replay}>{c.replay}</button></div>
+    <div className="cost-links"><a className="cost-calc" href="/savings">{c.calc}</a><button className="cost-replay" onClick={replay}>{c.replay}</button></div>
    </div>
   </div>
  </section>

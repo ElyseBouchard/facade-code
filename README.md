@@ -20,5 +20,7 @@ below are React + three.js (`src/home.tsx`, components in `src/landing`). The Ab
 - Diagnostics: open any page with `?debug` for an overlay of errors, footage events and each 3D view's WebGL state
   (also on `window.__diag`).
 
-The demo, hardware lab, savings calculator and waitlist stay on the first site (facade.build) and are linked from here.
+The demo (/demo), hardware lab (/hardware), savings calculator (/savings) and waitlist (/waitlist, /api/waitlist) are
+the first site's app (`retrofit-ledger`, at retrofit-ledger-two.vercel.app). `vercel.json` passes every address this build
+has no file for through to it, so they live on facade.build next to this front page.
 The scanner is a concept model and the demo runs on synthetic data; the copy says so.

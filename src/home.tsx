@@ -18,8 +18,8 @@ import {ProjectExhibits} from './landing/LandingExhibits';
 import {LogoMark} from './landing/Logo';
 
 /* Facade, v2: the construction footage first, then the first site's sections, in plain English. The demo, savings,
-   waitlist and hardware lab live on the first site (facade.build) and are linked from here. */
-const FIRST='https://facade.build';
+   waitlist and hardware lab are the first site's app, served at the same addresses (/demo, /savings, /waitlist,
+   /hardware) through vercel.json. */
 const t=copy.en,language={lang:'en' as const,t,setLang:()=>{}};
 
 /* ---------- the footage plays as soon as the page opens, and keeps looping whenever it can be seen ---------- */
@@ -59,7 +59,7 @@ function Footer(){
   <div className="footer-scan" aria-hidden="true"><IndexThumb/></div>
   <div className="footer-brand"><span className="footer-logo"><LogoMark/><MixedWordmark/></span><p>{t.footer.tagline}<br/><span>{t.footer.judgment} © {new Date().getFullYear()} FACADE</span></p></div>
   <a className="footer-top" href="#top"><span className="top-box" aria-hidden="true"><i/></span>{t.footer.top}</a>
-  <div className="footer-reach"><p>{t.footer.cont[0]}<br/>{t.footer.cont[1]}</p><nav className="lab-pills" aria-label={t.footer.navLabel}><a href={`${FIRST}/savings`}>{t.footer.pills[0]}</a><a href={`${FIRST}/waitlist`}>{t.footer.pills[1]}</a><a href={`${FIRST}/hardware`}>{t.footer.pills[2]}</a></nav></div>
+  <div className="footer-reach"><p>{t.footer.cont[0]}<br/>{t.footer.cont[1]}</p><nav className="lab-pills" aria-label={t.footer.navLabel}><a href="/savings">{t.footer.pills[0]}</a><a href="/waitlist">{t.footer.pills[1]}</a><a href="/hardware">{t.footer.pills[2]}</a></nav></div>
   <small className="footer-note">{t.footer.note}</small>
  </>
 }
@@ -94,12 +94,12 @@ function Sections(){
    </div>
   </section>
   <FieldCollage/>
-  <ProjectExhibits selected={selected} select={setSelected} openDemo={()=>{location.href=`${FIRST}/`}}/>
+  <ProjectExhibits selected={selected} select={setSelected} openDemo={()=>{location.href="/demo"}}/>
   <section className="lab-savings" data-reveal><div className="lab-savings-art" data-parallax="40" aria-hidden="true"><div className="savings-dial" data-spin="-.025">{Array.from({length:24},(_,i)=><i key={i} style={{rotate:`${i*15}deg`}}/>)}</div><span className="lab-hour">h</span><span className="lab-time-note">{t.savings.art}</span></div>
-   <div className="savings-copy"><p className="bracket lab-micro" data-scramble={t.savings.eyebrow}>{t.savings.eyebrow}</p><h2><Words text={t.savings.title[0]}/><br/><Words text={t.savings.title[1]} from={wordOffsets(t.savings.title)[1]}/></h2><p>{t.savings.body}</p><a className="lab-action" href={`${FIRST}/savings`}>{t.savings.action} <ArrowUpRight size={15}/></a><small>{t.savings.note}</small></div></section>
+   <div className="savings-copy"><p className="bracket lab-micro" data-scramble={t.savings.eyebrow}>{t.savings.eyebrow}</p><h2><Words text={t.savings.title[0]}/><br/><Words text={t.savings.title[1]} from={wordOffsets(t.savings.title)[1]}/></h2><p>{t.savings.body}</p><a className="lab-action" href="/savings">{t.savings.action} <ArrowUpRight size={15}/></a><small>{t.savings.note}</small></div></section>
   <section className="lab-questions" id="questions" data-reveal><h2 className="questions-title"><Words text={t.questions.title[0]}/> <Spark/> <Words text={t.questions.title[1]} from={wordOffsets(t.questions.title)[1]}/></h2>
    <div className="questions-cols"><p className="questions-intro">{t.questions.intro}</p><div className="questions-list">{t.questions.items.map(([q,a])=><details key={q}><summary><span>{q}</span><Plus size={15}/></summary><p>{a}</p></details>)}</div></div></section>
-  <section className="lab-join" data-reveal><p className="bracket lab-micro" data-scramble={t.join.eyebrow}>{t.join.eyebrow}</p><h2><Words text={t.join.title[0]}/><br/><Words text={t.join.title[1]} from={wordOffsets(t.join.title)[1]}/></h2><a className="lab-action" href={`${FIRST}/waitlist`}>{t.join.action} <ArrowUpRight size={16}/></a></section>
+  <section className="lab-join" data-reveal><p className="bracket lab-micro" data-scramble={t.join.eyebrow}>{t.join.eyebrow}</p><h2><Words text={t.join.title[0]}/><br/><Words text={t.join.title[1]} from={wordOffsets(t.join.title)[1]}/></h2><a className="lab-action" href="/waitlist">{t.join.action} <ArrowUpRight size={16}/></a></section>
   {footer&&createPortal(<Footer/>,footer)}
  </LangProvider>
 }

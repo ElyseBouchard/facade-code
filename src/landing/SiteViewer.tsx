@@ -10,7 +10,6 @@ import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 
 import {COSTS,SAVED,type Story} from './costData';
-import {scramble} from './scramble';
 export type SiteText={aria:string;loading:string;failed:string;unavailable:string;cursor:string;names:[string,string,string];savedName:string;legend:string};
 
 /** One red line per $1,000: 15, 14 and 8 lines, the leftmost of each drawn partway for the remainder ($14,500 is
@@ -84,7 +83,7 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
   // ---- overlay: a 2D canvas for the fans of red lines, and DOM labels at the top of the view ----
   const fan=document.createElement('canvas');fan.className='site-fan';labelHost.append(fan);const ctx=fan.getContext('2d')!;
   const makeLabel=(key:string,cls:string)=>{const d=document.createElement('div');d.className=`site-label ${cls}`;d.dataset.key=key;
-   const b=document.createElement('b');b.dir='ltr';b.addEventListener('pointerenter',()=>scramble(b));d.append(b,document.createElement('span'));labelHost.append(d);return d};
+   const b=document.createElement('b');b.dir='ltr';d.append(b,document.createElement('span'));labelHost.append(d);return d};
   const labels=[0,1,2].map(i=>makeLabel(`cat:${i}`,`cat-${i}`)),savedLabel=makeLabel('saved:0','saved');
   labels.forEach((d,i)=>{d.querySelector('span')!.textContent=words.current.names[i]});savedLabel.querySelector('span')!.textContent=words.current.savedName;
 

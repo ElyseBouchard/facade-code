@@ -3,7 +3,7 @@ import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {debugMode,diag,diagCanvas,diagFrame,diagView} from './diag';
-import {ExplodedStill,guardContext} from './stills';
+import {ExplodedFlipbook,guardContext} from './stills';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {hardwareParts} from './hardware-parts';
@@ -92,6 +92,7 @@ function sheetLines(b:T.Box3){
 export type ViewerText={aria:string;loading:string;unavailable:string;failed:string;cursor:string;labels:Record<string,string>};
 // 'still': WebGL or the model failed, so the view shows images rendered from it instead (see stills.tsx).
 type Status={kind:'loading'|'still'|'ready';pct?:number};
+const captureMode=typeof location!=='undefined'&&new URLSearchParams(location.search).has('capture');
 
 /** A model on a slow turntable; press and drag, or scroll, to separate it into an exploded axonometric. */
 export default function ExplodedViewer({model:which='wall',reality,focus,scroll,onExploded,text}:{model?:'wall'|'kit';reality:number;focus:WallSystem|null;scroll:RefObject<number>;onExploded?:(exploded:boolean)=>void;text?:ViewerText}){
@@ -235,6 +236,11 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
    if(!dragging&&!reduced){velocity*=Math.exp(-dt*3);const open=smooth(explode/.6);azimuth+=velocity+dt*config.view.spin*(1-Math.min(1,Math.abs(velocity)*20))*(1-open);
     // Once separated, settle onto the nearest 45° diagonal so the layers read as an exploded axonometric.
     if(open>0&&Math.abs(velocity)<.002){const diagonal=Math.round((azimuth-Math.PI/4)/(Math.PI/2))*(Math.PI/2)+Math.PI/4;azimuth+=(diagonal-azimuth)*(1-Math.exp(-dt*2.2*open));elevation+=(T.MathUtils.degToRad(config.view.openElevation)-elevation)*(1-Math.exp(-dt*1.6*open))}}
+   // Capturing the fallback stills (?capture): an exact explode amount from the script, with the camera turning onto the
+   // same diagonal and height the live view settles on, so every frame of the sequence lines up.
+   const forced=captureMode?(window as unknown as {__explode?:Record<string,number>}).__explode?.[which]:undefined;
+   if(forced!==undefined){explode=forced;const open=smooth(explode/.6),a0=config.view.azimuth,diagonal=Math.round((a0-Math.PI/4)/(Math.PI/2))*(Math.PI/2)+Math.PI/4;
+    azimuth=T.MathUtils.lerp(a0,diagonal,open);elevation=T.MathUtils.lerp(T.MathUtils.degToRad(config.view.elevation),T.MathUtils.degToRad(config.view.openElevation),open);velocity=0}
    setLayers(explode);updateGuides();
    // As the board flies forward its solid edge thins out, leaving a line drawing over the exploded systems.
    if(sheetFade){const open=smooth(explode/.7);sheetFade.fadeMax.value=T.MathUtils.lerp(.94,.16,open);sheetFade.fadeMin.value=T.MathUtils.lerp(.035,.02,open)}const diag=diagrams[r];guideMaterial.opacity=(diag?diag.guideOpacity:.3)*smooth(explode/.25);
@@ -254,7 +260,7 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
    scene.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.LineSegments)o.geometry.dispose()});for(const {mat} of reals.values())mat.dispose();for(const {mat} of diagramMats.values())mat.dispose();for(const m of edgeMats.values())m.dispose();(ground.material as T.Material).dispose();guideMaterial.dispose();sheetLineMat.dispose();textures.noise.dispose();textures.spangle.dispose();
    draco.dispose();environment.dispose();renderer.dispose();canvas.remove();labelHost.replaceChildren();spans.clear()};
  },[scroll]);
- if(status.kind==='still')return <div className="wall-viewer is-still" role="img" aria-label={text?.aria??config.aria}><ExplodedStill name={which} scroll={scroll} range={config.scroll} onExploded={onExploded}/></div>;
+ if(status.kind==='still')return <div className="wall-viewer is-still" role="img" aria-label={text?.aria??config.aria}><ExplodedFlipbook name={which} scroll={scroll} range={config.scroll} onExploded={onExploded}/></div>;
  const message=status.kind==='loading'?`${text?.loading??'LOADING'}${status.pct===undefined?'':` ${status.pct}%`}`:'';
  return <div className="wall-viewer" data-cursor={text?.cursor??'DRAG TO EXPLODE'}><div ref={host} className="wall-canvas"/><div ref={labelsRef} className="wall-labels" aria-hidden="true"/>{message&&<p className="wall-status" role="status">{message}</p>}</div>
 }

@@ -12,8 +12,9 @@ below are React + three.js (`src/home.tsx`, components in `src/landing`). The Ab
 - 3D models, textures and the Draco decoder in `public/models`, `public/hardware`, `public/texture` and `public/draco`
   come from the first site's repository.
 - Logo: `public/logo-mark.svg` and `src/landing/logo-path.ts` (the same path is inlined in both HTML headers).
-- Stills: when a browser can't keep a WebGL context, the 3D views show `public/stills/*.webp` instead (assembled and
-  taken apart, desktop and `-m` phone framing). Re-render them after changing a model or its view:
+- Stills: when a browser can't keep a WebGL context, the 3D views show `public/stills/*.webp` instead: the wall and
+  the scanner as 12 frames each from assembled to taken apart, played by scroll, and the numbers view as one image
+  (desktop, and `-m` for phone framing). Re-render them after changing a model or its view:
   `npm run build && npx vite preview --port 5201 &`, then `node scripts/capture-stills.mjs` (PNG into `assets/stills`),
   then convert to WebP (quality 82, alpha kept) into `public/stills`.
 - Diagnostics: open any page with `?debug` for an overlay of errors, footage events and each 3D view's WebGL state

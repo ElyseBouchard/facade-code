@@ -60,23 +60,7 @@
 .is-scrolled .lab-header .reality-globe{opacity:0;transform:translateY(-6px) scale(.8)}
 .reality-tip{position:absolute;top:calc(100% + 4px);white-space:nowrap;font:var(--t-xxs)/1 var(--ui);background:var(--ink);color:var(--paper);padding:3px 5px;opacity:0;transform:scale(.4);transform-origin:50% 0;transition:opacity .25s,transform .5s var(--ease);pointer-events:none}
 .reality-control:hover .reality-tip,.reality-toggle:focus-visible~.reality-tip{opacity:1;transform:none}
-/* ---------- Cursor, progress, loader, veil ---------- */
-.lab-cursor{position:fixed;left:0;top:0;z-index:200;pointer-events:none;opacity:0;transition:opacity .3s;display:none}
-@media(pointer:fine){
-.lab-cursor{display:block}.motion-ready.has-pointer,.motion-ready.has-pointer *{cursor:none!important}
-}
-.has-pointer .lab-cursor{opacity:1}
-.cursor-box{position:absolute;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border:1px solid var(--ink);background:var(--paper);transition:width .4s var(--ease),height .4s var(--ease),margin .4s var(--ease),background-color .3s,border-radius .4s}
-.cursor-box::before,.cursor-box::after{content:'';position:absolute;left:50%;top:50%;width:7px;height:1px;margin:-.5px 0 0 -3.5px;background:var(--ink)}
-.cursor-box::after{transform:rotate(90deg)}
-.lab-cursor.is-active .cursor-box{width:26px;height:26px;margin:-13px 0 0 -13px;background:transparent}
-.cursor-label{position:absolute;left:16px;top:12px;white-space:nowrap;font:var(--t-xxs)/1 var(--ui);text-transform:uppercase;background:var(--ink);color:var(--paper);padding:3px 5px 2px;transform:scale(0);transform-origin:0 0;transition:transform .4s var(--ease)}
-.lab-cursor.has-label .cursor-label{transform:none}
-.reality-blueprint .cursor-box{border-radius:50%;background:transparent}
-.reality-blueprint .cursor-box::before{width:31px;margin-left:-15.5px}
-.reality-blueprint .cursor-box::after{width:31px;margin-left:-15.5px}
-.reality-cyber .cursor-box{border-color:var(--accent);background:transparent;box-shadow:0 0 0 3px var(--paper),0 0 0 4px rgba(89,231,202,.35)}
-.reality-cyber .cursor-box::before,.reality-cyber .cursor-box::after{background:var(--accent)}
+/* ---------- Progress, loader, veil ---------- */
 .reading-progress{position:fixed;left:0;bottom:0;z-index:45;width:100%;height:2px;background:var(--ink);transform:scaleX(0);transform-origin:0 0;pointer-events:none}
 .intro-loader{position:fixed;inset:0;z-index:160;background:#fff;color:#000;--paper:#fff;--line:rgba(0,0,0,.075);--cross:rgba(0,0,0,.42);display:grid;place-items:center;transition:opacity .75s var(--ease),visibility 0s .75s}
 .intro-loader.is-leaving{opacity:0;visibility:hidden}
@@ -360,9 +344,6 @@
 .lab-site .exhibit-drawer{position:fixed;inset:0 0 0 auto;margin:0;width:min(76vw,1240px);max-width:none;height:100vh;height:100dvh;max-height:none;padding:0;border:0;background:transparent;color:#000;overflow:hidden;cursor:auto}
 .lab-site .exhibit-drawer *{cursor:auto}
 .lab-site .exhibit-drawer button{cursor:pointer}
-.motion-ready.has-pointer .exhibit-drawer,.motion-ready.has-pointer .exhibit-drawer *{cursor:auto!important}
-.motion-ready.has-pointer .exhibit-drawer button{cursor:pointer!important}
-html.drawer-open .lab-cursor{opacity:0}
 .exhibit-drawer::backdrop{background:rgba(255,255,255,.22);backdrop-filter:blur(7px);animation:fade .5s var(--ease) both}
 .reality-cyber .exhibit-drawer::backdrop{background:rgba(16,18,18,.45)}
 .exhibit-drawer.is-closing::backdrop{animation:fade-out .42s var(--ease-in) both}
@@ -514,7 +495,7 @@ html.drawer-open{overflow:hidden}
 }
 /* ---------- Reduced motion ---------- */
 @media(prefers-reduced-motion:reduce){
-.lab-site *,.lab-site *::before,.lab-site *::after{animation:none!important;transition:none!important}.lab-site .w,.lab-site .exhibit,.lab-site .win{opacity:1!important;scale:none!important}.lab-site .w{transform:none!important}.lab-site .outline-phrase{clip-path:none!important}.lab-site .lab-connectors path,.lab-site .tail path{stroke-dashoffset:0!important}.lab-site .node{opacity:1!important;transform:none!important}.lab-cursor,.reality-veil,.intro-loader{display:none!important}
+.lab-site *,.lab-site *::before,.lab-site *::after{animation:none!important;transition:none!important}.lab-site .w,.lab-site .exhibit,.lab-site .win{opacity:1!important;scale:none!important}.lab-site .w{transform:none!important}.lab-site .outline-phrase{clip-path:none!important}.lab-site .lab-connectors path,.lab-site .tail path{stroke-dashoffset:0!important}.lab-site .node{opacity:1!important;transform:none!important}.reality-veil,.intro-loader{display:none!important}
 }
 /* ---------- Second screen: the field kit ---------- */
 .kit-section{position:relative;z-index:1;height:140vh;height:140svh}
@@ -610,16 +591,14 @@ html:lang(ar) .lab-site :is(h1,h2,h3,p,li,summary,small){direction:rtl}
 .lab-site .cost-scenario[aria-pressed='true']{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .lab-site .cost-scenario.scenario-savings[aria-pressed='true']{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
 .lab-site .cost-scenario.scenario-savings[aria-pressed='true'] .amount{color:var(--red)}
-/* The saving: red, with an original screen-print texture of wavy line bundles when it is in view. */
+/* The saving: outlined in red, then filled with plain red in the savings view. */
 .cost-savings{position:relative;isolation:isolate;overflow:hidden;container-type:inline-size;display:grid;gap:10px;padding:18px 20px 20px;border:1px solid var(--red);transition:background-color .7s var(--ease),color .7s var(--ease)}
-.cost-savings::before{content:'';position:absolute;inset:0;z-index:-1;background:url('/texture/print-waves.webp') center/cover;opacity:0;transition:opacity .9s var(--ease)}
 .cost-tag{justify-self:start;padding:6px 10px 5px;border:1px solid currentColor;border-radius:52px;font:400 10px/1 var(--ui);text-transform:uppercase}
 .cost-big{margin:0}
 .cost-big .amount{display:block;white-space:nowrap;font:400 min(clamp(60px,6.4vw,104px),24cqi)/.86 var(--haas);letter-spacing:-.05em;color:var(--red);transition:color .7s var(--ease)}
 .cost-line{margin:0;font:400 15px/1.35 var(--haas)}
 .cost-net{margin:0;font:400 10.5px/1.4 var(--ui);text-transform:uppercase;opacity:.8}
 .mode-savings .cost-savings{background:var(--red);color:#fff}
-.mode-savings .cost-savings::before{opacity:.3}
 .mode-savings .cost-big .amount{color:#fff}
 .cost-source{margin:0;font:400 10.5px/1.45 var(--ui);color:var(--muted)}
 .cost-source a{color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
@@ -636,4 +615,4 @@ html:lang(ar) .lab-site :is(h1,h2,h3,p,li,summary,small){direction:rtl}
  .cost-big .amount{font-size:min(72px,24cqi)}
  .cost-scenario .amount{font-size:22px}
 }
-@media(prefers-reduced-motion:reduce){.cost-savings,.cost-savings::before,.cost-big .amount{transition:none}}
+@media(prefers-reduced-motion:reduce){.cost-savings,.cost-big .amount{transition:none}}

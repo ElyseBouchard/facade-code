@@ -74,7 +74,7 @@ function Sections(){
  const footer=document.getElementById('site-footer');
  return <LangProvider value={language}>
   <GridOverlay/>
-  <div className="lab-cursor" aria-hidden="true"><i className="cursor-box"/><span className="cursor-label"/></div><div className="reading-progress" aria-hidden="true"/>
+  <div className="reading-progress" aria-hidden="true"/>
   <WallSection/>
   <KitSection/>
   <CostSection/>

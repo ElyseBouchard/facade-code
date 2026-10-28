@@ -18,10 +18,10 @@ const diagrams:Record<number,Diagram>={
 const noEdges=new Set(['Foil','Insulation','Armor','Cat6','Primer','DrywallPaper']);
 /** Surface variation sampled in object space (triplanar), so no UVs are needed. [map, scale, albedo, roughness] */
 const surfaces:Record<string,['noise'|'spangle',number,number,number]>={ConcreteWall:['noise',2.4,.45,.25],ConcreteFloor:['noise',1.6,.3,.35],Galvanized:['spangle',7,.24,.55],SteelStud:['spangle',10,.09,.4],EMT:['spangle',14,.12,.35],Foil:['noise',12,.12,.6],Insulation:['noise',7,.14,0],CastIron:['noise',9,.35,.35],Copper:['noise',5,.18,.4],Brass:['noise',8,.12,.3],PanelPaint:['noise',3,.05,.25],Armor:['noise',22,.15,.3]};
-/** The scanner's accent parts (seam band, scan button, status lights, logo, windows) come out of its CAD export in teal;
- * here they take the page's signal red (#c13833), set a shade darker so that under the scene's lighting the lit faces
- * render at that red rather than lighter. */
-const ACCENT_SOURCE='#178c86',ACCENT='#a82c28';
+/** The scanner's accent parts come out of its CAD export in teal (seam band, scan button, status lights, logo, windows)
+ * and blue (radar bay, lens marker, controller cable routes); here they all take the page's signal red (#c13833), set a
+ * shade darker so that under the scene's lighting the lit faces render at that red rather than lighter. */
+const ACCENT_SOURCES=new Set(['#178c86','#688ca8']),ACCENT='#a82c28';
 /** What each model needs: where it loads from, its part labels and staging, and how scrolling drives the explode. */
 type Label=[layer:string,text:string,system:string,anchor?:string,dot?:string];
 /** Models rest assembled; scroll or drag separates them. With `stay`, a drag leaves the model exploded until Enter assembles it. */
@@ -171,7 +171,7 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
    model.traverse(obj=>{if(!(obj instanceof T.Mesh))return;let sys='framing';for(let n:T.Object3D|null=obj;n;n=n.parent)if(n.userData.system||n.userData.partId){sys=n.userData.system??n.userData.partId;break}
     const source=obj.material as T.MeshStandardMaterial,name=source.name||'SteelStud',id=`${sys}|${name}`,sheet=sys==='drywall';obj.userData.system=sys;
     if(sheet){obj.geometry.computeBoundingBox();const b=obj.geometry.boundingBox!,lines=new T.LineSegments(sheetLines(b),sheetLineMat);lines.renderOrder=4;obj.add(lines);addFade(sheetLineMat,b.min.x,b.max.x,.6,1)}
-    if(!reals.has(id)){const real=sheet?new T.MeshStandardMaterial({name,color:'#f7f6f2',roughness:.92,metalness:0,transparent:true,depthWrite:false}):source.clone();if(name===ACCENT_SOURCE)real.color.set(ACCENT);
+    if(!reals.has(id)){const real=sheet?new T.MeshStandardMaterial({name,color:'#f7f6f2',roughness:.92,metalness:0,transparent:true,depthWrite:false}):source.clone();if(ACCENT_SOURCES.has(name))real.color.set(ACCENT);
      // Bright, mirror-smooth metals (the kit's aluminum) read better as brushed: rougher, with more environment light.
      if(!sheet&&real.metalness>.8&&real.color.getHSL({h:0,s:0,l:0}).l>.3)real.roughness=Math.max(real.roughness,.32);if(sheet){const b=obj.geometry.boundingBox!;sheetFade=addFade(real,b.min.x,b.max.x,.035,.94)}real.envMapIntensity=name==='Foil'?1.7:real.metalness>.5?(config.merge?1.55:1.25):.9;const surf=surfaces[name];if(surf)addSurface(real,textures[surf[0]],surf);reals.set(id,{mat:real,system:sys,name});
      const ghost=sys==='drywall';diagramMats.set(id,{mat:new T.MeshStandardMaterial({roughness:.8,metalness:0,transparent:ghost,depthWrite:!ghost,side:ghost?T.DoubleSide:T.FrontSide,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1}),system:sys,name})}

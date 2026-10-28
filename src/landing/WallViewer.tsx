@@ -4,7 +4,6 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {debugMode,diag,diagCanvas,diagFrame,diagView} from './diag';
 import {ExplodedFlipbook,guardContext} from './stills';
-import {ViewerLoading} from './WallHero';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {hardwareParts} from './hardware-parts';
@@ -90,7 +89,7 @@ function sheetLines(b:T.Box3){
 }
 
 /** Words the viewer shows, in the page's language. Labels are keyed by layer name (wall) or part id (kit). */
-export type ViewerText={aria:string;loading:string;unavailable:string;failed:string;labels:Record<string,string>};
+export type ViewerText={aria:string;loading:string;unavailable:string;failed:string;cursor:string;labels:Record<string,string>};
 // 'still': WebGL or the model failed, so the view shows images rendered from it instead (see stills.tsx).
 type Status={kind:'loading'|'still'|'ready';pct?:number};
 const captureMode=typeof location!=='undefined'&&new URLSearchParams(location.search).has('capture');
@@ -262,5 +261,6 @@ export default function ExplodedViewer({model:which='wall',reality,focus,scroll,
    draco.dispose();environment.dispose();renderer.dispose();canvas.remove();labelHost.replaceChildren();spans.clear()};
  },[scroll]);
  if(status.kind==='still')return <div className="wall-viewer is-still" role="img" aria-label={text?.aria??config.aria}><ExplodedFlipbook name={which} scroll={scroll} range={config.scroll} onExploded={onExploded}/></div>;
- return <div className="wall-viewer"><div ref={host} className="wall-canvas"/><div ref={labelsRef} className="wall-labels" aria-hidden="true"/>{status.kind==='loading'&&<ViewerLoading label={text?.loading??'Loading'} pct={status.pct}/>}</div>
+ const message=status.kind==='loading'?`${text?.loading??'LOADING'}${status.pct===undefined?'':` ${status.pct}%`}`:'';
+ return <div className="wall-viewer" data-cursor={text?.cursor??'DRAG TO EXPLODE'}><div ref={host} className="wall-canvas"/><div ref={labelsRef} className="wall-labels" aria-hidden="true"/>{message&&<p className="wall-status" role="status">{message}</p>}</div>
 }

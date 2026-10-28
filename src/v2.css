@@ -1,0 +1,87 @@
+/* Facade v2: the construction footage full-bleed at the top, then the first site's landing sections unchanged in
+   style (Neue Haas, uppercase Montreal labels, signal red, the fixed grid). Only what is new lives here. */
+
+/* ---------- header: the logo beside the name; white over the footage, on paper patches below it ---------- */
+.lab-site .v2-brand { display: inline-flex; align-items: center; gap: .38em; transition: letter-spacing .5s var(--ease), background-color .6s, color .5s var(--ease); }
+.v2-brand .logo-mark { height: 1.12em; width: auto; translate: 0 -.05em; flex: none; }
+.lab-site .v2-nav { justify-self: end; display: flex; gap: 18px; padding-top: 3px; font: var(--t-xs)/1 var(--ui); text-transform: uppercase; background: var(--paper); box-shadow: 0 0 0 4px var(--paper); transition: color .5s var(--ease), background-color .6s, box-shadow .6s; }
+.v2-nav a { border-bottom: 1px solid transparent; padding-bottom: 2px; transition: border-color .3s; }
+.v2-nav a:hover, .v2-nav a:focus-visible { border-color: currentColor; }
+.lab-header.on-video .lab-brand, .lab-header.on-video .v2-nav { background: transparent; box-shadow: none; color: #fff; }
+.lab-site .lab-header { transition: background-color .5s var(--ease); }
+.lab-site .lab-header.on-video { background: transparent; border-color: transparent; }
+
+/* ---------- hero: the footage ---------- */
+.v2-hero { position: relative; z-index: 2; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden; background: #121212; color: #fff; }
+.v2-poster, .v2-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.v2-video { z-index: 1; }
+.v2-hero::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(to right, rgba(12, 12, 12, .58) 0, rgba(12, 12, 12, .22) 45%, rgba(12, 12, 12, 0) 72%),
+              linear-gradient(to bottom, rgba(12, 12, 12, .35) 0, rgba(12, 12, 12, 0) 22%, rgba(12, 12, 12, 0) 68%, rgba(12, 12, 12, .5) 100%);
+}
+/* The page's grid, drawn in white across the footage. */
+.v2-hero-grid {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none; --l: rgba(255, 255, 255, .16); --gx1: 22.25%; --gx2: 50%; --gx3: 77.75%;
+  background: linear-gradient(var(--l), var(--l)) var(--gx1) 0 / 1px 100% no-repeat, linear-gradient(var(--l), var(--l)) var(--gx2) 0 / 1px 100% no-repeat,
+              linear-gradient(var(--l), var(--l)) var(--gx3) 0 / 1px 100% no-repeat, linear-gradient(var(--l), var(--l)) 0 33.333% / 100% 1px no-repeat,
+              linear-gradient(var(--l), var(--l)) 0 66.666% / 100% 1px no-repeat;
+}
+.v2-hero-grid .cross { position: absolute; width: 15px; height: 15px; margin: -7px 0 0 -7px; }
+.v2-hero-grid .cross::before, .v2-hero-grid .cross::after { content: ''; position: absolute; left: 3px; top: 7px; width: 9px; height: 1px; background: rgba(255, 255, 255, .72); }
+.v2-hero-grid .cross::after { transform: rotate(90deg); }
+.v2-hero-grid .x1 { left: var(--gx1); } .v2-hero-grid .x2 { left: var(--gx2); } .v2-hero-grid .x3 { left: var(--gx3); }
+.v2-hero-grid .y1 { top: 33.333%; } .v2-hero-grid .y2 { top: 66.666%; }
+.v2-hero-copy { position: absolute; z-index: 4; left: var(--gm); top: max(86px, 13vh); width: min(46%, 660px); }
+.lab-site .v2-hero-title { font: 400 calc(var(--t-xxl) * var(--fit, 1))/.92 var(--haas); letter-spacing: -.04em; text-transform: uppercase; color: #fff; }
+.v2-hero-title .split-line { display: block; width: max-content; }
+/* The letters come in with a soft flicker: never below 40% and fully white within about a second. */
+.lab-site .v2-hero-title .split-letter { animation: v2-flicker .42s steps(1) both; animation-delay: calc(var(--d) * 14ms + .08s); }
+@keyframes v2-flicker { 0% { opacity: .4; } 25% { opacity: 1; } 45% { opacity: .62; } 65% { opacity: 1; } 82% { opacity: .82; } 100% { opacity: 1; } }
+.lab-site .v2-hero-sub { margin-top: 28px; max-width: 340px; font: var(--t-s)/1.2 var(--ui); text-transform: uppercase; }
+.v2-hero .hero-actions { margin-top: 28px; }
+/* The waitlist beside the demo: the same button, white. */
+.lab-site .v2-waitlist { display: flex; justify-content: space-between; align-items: center; gap: 14px; min-width: 190px; padding: .62em .7em .55em;
+  font: var(--t-m)/1 var(--ui); text-transform: uppercase; background: #fff; color: #111; border: 1px solid #fff; border-radius: 2px;
+  transition: background-color .4s, color .4s, border-radius .5s var(--ease); }
+.lab-site .v2-waitlist:hover, .lab-site .v2-waitlist:focus-visible { background: transparent; color: #fff; border-radius: 12px; }
+.v2-waitlist svg { transition: transform .55s var(--ease); }
+.v2-waitlist:hover svg { transform: rotate(45deg); }
+.v2-hero-foot { position: absolute; z-index: 4; inset: auto var(--gm) var(--gm); display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 20px; font: var(--t-xs)/1.1 var(--ui); text-transform: uppercase; }
+.v2-scroll { display: grid; justify-items: center; gap: 8px; }
+.v2-scroll i { width: 1px; height: 36px; background: rgba(255, 255, 255, .7); animation: v2-cue 2.2s var(--ease) infinite; }
+@keyframes v2-cue { 0% { transform: scaleY(0); transform-origin: top; } 45% { transform: scaleY(1); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+.v2-next { justify-self: end; border-bottom: 1px solid transparent; padding-bottom: 2px; transition: border-color .3s; }
+.v2-next:hover { border-color: #fff; }
+
+/* ---------- the wall under the footage: a plain key, nothing reacts to the pointer ---------- */
+.wall-section .kit-copy { top: max(86px, 12vh); }
+.lab-site .wall-key { list-style: none; margin: 0; padding: 0; }
+.lab-site .wall-key .legend-item, .lab-site .wall-key .legend-item:hover { grid-template-columns: 10px 1fr; padding-left: 0; cursor: default; border-bottom-color: var(--soft); }
+.lab-site .wall-key:hover .legend-item:not(:hover) { opacity: 1; }
+
+/* ---------- stills in place of a 3D view the browser can't draw (stills.tsx) ---------- */
+.viewer-still, .viewer-still > span, .viewer-still picture { position: absolute; inset: 0; display: block; }
+.viewer-still img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+/* ---------- loops rest while their section is off screen (useLandingMotion toggles .is-away) ---------- */
+.lab-site .is-away *, .lab-site .is-away *::before, .lab-site .is-away *::after { animation-play-state: paused !important; }
+
+/* ---------- footer: the mark beside the wordmark ---------- */
+.footer-logo { display: inline-flex; align-items: center; gap: .3em; }
+.footer-logo .logo-mark { height: max(32px, 2.9vw); width: auto; }
+
+@media (max-width: 767px) {
+  .lab-site .v2-nav a:not(:last-child) { display: none; }
+  .v2-hero-copy { right: var(--gm); width: auto; top: 84px; }
+  .lab-site .v2-hero-title { font-size: calc(min(11.19vw, (100vw - 40px) / 10.6) * var(--fit, 1)); }
+  .lab-site .v2-hero-sub { max-width: none; margin-top: 18px; }
+  .v2-hero .hero-actions { flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+  .lab-site .v2-hero .hero-actions .lab-demo, .lab-site .v2-hero .hero-actions .v2-waitlist { min-width: 0; flex: 1 1 100%; }
+  .v2-hero-foot { grid-template-columns: 1fr auto; }
+  .v2-hero-foot .bracket, .v2-scroll { display: none; }
+  .lab-site .wall-key .legend-item { border-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-site .v2-hero-title .split-letter, .v2-scroll i { animation: none; }
+}

@@ -55,7 +55,6 @@ export function CostSection(){
   <div className={`cost-body mode-${mode}`}>
    <div className="cost-stage">
     <div className="cost-head">
-     <p className="bracket lab-micro" data-scramble={c.eyebrow} key={lang}>{c.eyebrow}</p>
      <h2 id="cost-title"><Words text={c.title[0]}/><br/><Words text={c.title[1]} from={c.title[0].split(' ').length}/></h2>
      <p className="cost-lede">{c.lede}</p>
     </div>

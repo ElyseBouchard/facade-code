@@ -60,7 +60,7 @@ export function ProjectExhibits({selected,select,openDemo}:{selected:number|null
  const nudge=(e:ReactKeyboardEvent<HTMLButtonElement>)=>{const keys:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};const dir=keys[e.key];if(!dir)return;e.preventDefault();const b=bounds(e.currentTarget),amount=e.shiftKey?60:20;place(e.currentTarget,Math.max(b.minX,Math.min(b.maxX,b.x+dir[0]*amount)),Math.max(b.minY,Math.min(b.maxY,b.y+dir[1]*amount)))};
  const item=selected===null?null:exhibits[selected],text=item&&words(item.key);const next=selected===null?0:(selected+1)%exhibits.length;
  return <section className="lab-exhibits" id="approaches" data-reveal>
-  <div className="exhibit-heading"><h2>{x.heading}</h2><p data-scramble={x.hint} key={lang}>{x.hint}</p></div>
+  <div className="exhibit-heading"><h2>{x.heading}</h2></div>
   <div className="exhibit-field" ref={field}>{exhibits.map((ex,i)=><button key={ex.key} className={`exhibit exhibit-${i}`} style={{'--i':i} as CSSProperties} data-cursor={x.cursor} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onKeyDown={nudge} onClick={e=>{if(dragged.current&&e.detail!==0)return;open(i,e.currentTarget)}} aria-haspopup="dialog" aria-label={x.open.replace('{title}',words(ex.key).title)}><span className="exhibit-number">0{i+1}.</span><ExhibitObject kind={ex.key}/><span className="exhibit-caption">{words(ex.key).title}</span></button>)}</div>
   <ol className="exhibit-key">{exhibits.map((ex,i)=><li key={`${ex.key}-${lang}`}><button onClick={e=>open(i,e.currentTarget)} aria-haspopup="dialog"><span>0{i+1}.</span><span data-scramble={words(ex.key).title.toUpperCase()}>{words(ex.key).title.toUpperCase()}</span></button></li>)}</ol>
   <dialog ref={dialog} className="exhibit-drawer" data-lenis-prevent onCancel={e=>{e.preventDefault();select(null)}} onClick={e=>{if(e.target===e.currentTarget)select(null)}} aria-labelledby="exhibit-title">
@@ -70,10 +70,10 @@ export function ProjectExhibits({selected,select,openDemo}:{selected:number|null
      <h2 id="exhibit-title">{text.title}</h2>
      <p className="drawer-desc">{text.desc}</p><p className="drawer-desc">{text.detail}</p>
      <ul className="drawer-points">{text.points.map(p=><li key={p}>{p}</li>)}</ul>
-     <div className="drawer-actions"><button className="lab-demo" onClick={()=>{select(null);openDemo(item.step)}}>{t.hero.demo} <ArrowUpRight size={15}/></button><small>{x.opensAt} {item.section.toUpperCase()}</small></div>
+     <div className="drawer-actions"><button className="lab-demo" onClick={()=>{select(null);openDemo(item.step)}}>{t.hero.demo} <ArrowUpRight size={15}/></button></div>
      <button className="drawer-next" onClick={()=>select(next)}>{x.next} 0{next+1}. {words(exhibits[next].key).title.toUpperCase()} {x.arrow}</button>
     </div>
-    <div className="drawer-visual"><span className="drawer-tag">{x.illustrative} {text.label}</span><ExhibitObject kind={item.key}/><div className="drawer-ruler" aria-hidden="true">{Array.from({length:9},(_,i)=><i key={i}>{i*10}</i>)}</div></div>
+    <div className="drawer-visual"><ExhibitObject kind={item.key}/></div>
    </div>}
   </dialog>
  </section>

@@ -24,7 +24,7 @@ const en={
  },
  kit:{
   eyebrow:'THE SCANNER / 02',title:['The scanner,','taken apart.'],
-  lede:'A handheld tool you roll along a wall. It has a heat camera, a metal sensor and a wheel that measures how far it has gone, with room saved for radar.',
+  lede:'A concept for a handheld tool you roll along a wall. It has a heat camera, a metal sensor and a wheel that measures how far it has gone, with room saved for radar.',
   link:'SEE THE HARDWARE ↗',hintOpen:'TAKEN APART',hintClosed:'SCROLL OR DRAG TO TAKE IT APART',caption:'CONCEPT MODEL / NOT FINAL',
   viewer:{
    aria:'The Facade scanner, a concept model: shell and handle, sensor nose, heat camera, controller board, USB ports, space for radar, metal sensor, measuring wheel and screws. Scroll or drag to take it apart; arrow keys turn it.',

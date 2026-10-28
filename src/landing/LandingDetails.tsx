@@ -82,10 +82,9 @@ export function FieldDrawing({kind=0}:{kind?:number}){const gridId=useId(),d=use
 
 
 export function FieldCollage(){
- const {lang,t}=useCopy(),c=t.collage,log=c.log,ticker=c.ticker;
+ const {lang,t}=useCopy(),c=t.collage,log=c.log;
  return <section className="lab-collage" data-reveal>
   <div className="win win-log" data-parallax="-40" data-origin="tl">
-   <div className="collage-ticker" aria-hidden="true"><span>{ticker.repeat(8)}</span></div>
    <div className="log-body"><div className="log-lines" aria-label={c.logLabel} role="list">{[...log,...log].map((row,i)=><p key={i} role={i<log.length?'listitem':undefined} aria-hidden={i>=log.length||undefined}><b>{row[0]}</b> {row[1]} <span>{row[2]}</span> <em>{row[3]}</em></p>)}</div><div className="log-plan" tabIndex={0} data-cursor={c.cursor}><FieldDrawing/></div></div>
    <span className="win-x" aria-hidden="true">×</span><small className="log-note">{c.logNote}</small>
   </div>

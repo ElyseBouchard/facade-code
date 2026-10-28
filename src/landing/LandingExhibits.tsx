@@ -1,22 +1,13 @@
-import {useEffect,useRef,type CSSProperties,type KeyboardEvent as ReactKeyboardEvent,type PointerEvent as ReactPointerEvent} from 'react';
+import {useEffect,useRef} from 'react';
 import {ArrowUpRight,X} from 'lucide-react';
-import {motionBus} from './useLandingMotion';
 import {useCopy,type Copy} from './i18n';
 
 type ExhibitKey=keyof Copy['exhibits']['items'];
-/** Each feature's drawing, tint and the workspace screen it opens; its words come from the page language. */
-const exhibits:{key:ExhibitKey;tone:string;step:number;section:string}[]=[
- {key:'evidence',tone:'#bfd0f4',step:5,section:'Field Evidence'},
- {key:'documents',tone:'#f2d9c4',step:0,section:'Evidence'},
- {key:'review',tone:'#cfe9dc',step:5,section:'Field Evidence'},
- {key:'requirements',tone:'#e3dcf5',step:1,section:'Requirements'},
- {key:'options',tone:'#efe8a8',step:3,section:'Comparison'},
- {key:'calculations',tone:'#cfe2ee',step:3,section:'Comparison'},
- {key:'report',tone:'#e7e7e7',step:4,section:'Report'},
- {key:'kit',tone:'#f2cfc8',step:7,section:'Hardware lab'},
-];
+/** The features, in order; their words come from the copy. */
+const exhibits:{key:ExhibitKey}[]=[{key:'evidence'},{key:'documents'},{key:'review'},{key:'requirements'},{key:'options'},{key:'calculations'},{key:'report'},{key:'kit'}];
+const number=(i:number)=>String(i+1).padStart(2,'0');
 
-/** Line-drawn objects for each feature; stroke follows the active reality. */
+/** A line drawing for each feature, in ink with a grey fill. */
 export function ExhibitObject({kind}:{kind:string}){
  const o=useCopy().t.exhibits.obj;
  const body=(()=>{switch(kind){
@@ -29,51 +20,43 @@ export function ExhibitObject({kind}:{kind:string}){
   case 'report':return <g><path d="M56 18h70l22 22v104H56Z" className="paper"/><path d="M126 18v22h22" className="fill"/><text x="66" y="38" className="obj-text">{o.draft}</text>{[54,64,74,92,102,112].map(y=><path key={y} d={`M66 ${y}h${y>90?62:70}`} opacity=".7"/>)}<g className="obj-stamp"><rect x="92" y="118" width="62" height="20" className="fill" transform="rotate(-6 123 128)"/><text x="98" y="131" className="obj-text" transform="rotate(-6 123 128)">{o.human}</text></g></g>;
   default:return <g><path d="M26 130h150"/><rect x="76" y="34" width="60" height="10" rx="4" className="ink"/><rect x="76" y="40" width="10" height="32" className="ink"/><rect x="126" y="40" width="10" height="32" className="ink"/><rect x="80" y="29" width="11" height="5" rx="1" className="fill"/><rect x="42" y="70" width="122" height="20" rx="8" className="fill"/><rect x="40" y="88" width="126" height="22" rx="6" className="ink"/><rect x="28" y="72" width="26" height="32" rx="3" className="ink"/><circle cx="28" cy="88" r="5" className="paper"/><path d="M58 113h56" strokeDasharray="3 2"/><g className="obj-wheels"><circle cx="148" cy="120" r="10" className="ink"/><path d="M148 112v16M140 120h16" className="inv-stroke"/></g></g>;
  }})();
- return <svg className={`exhibit-object obj-${kind}`} viewBox="0 0 200 160" aria-hidden="true"><ellipse className="obj-shadow" cx="100" cy="150" rx="58" ry="6"/><g className="obj-body" fill="none" stroke="currentColor" strokeLinejoin="round">{body}</g></svg>
+ return <svg className={`exhibit-object obj-${kind}`} viewBox="0 0 200 160" aria-hidden="true"><g className="obj-body" fill="none" stroke="currentColor" strokeLinejoin="round">{body}</g></svg>
 }
 
-type Drag={target:HTMLButtonElement;startX:number;startY:number;x:number;y:number;minX:number;maxX:number;minY:number;maxY:number;samples:[number,number,number][]};
-const place=(el:HTMLElement,x:number,y:number)=>{el.style.translate=`${x}px ${y}px`;el.dataset.dragX=String(x);el.dataset.dragY=String(y)};
-
-export function ProjectExhibits({selected,select,openDemo}:{selected:number|null;select:(i:number|null)=>void;openDemo:(step?:number)=>void}){
- const {lang,t}=useCopy(),x=t.exhibits,words=(key:ExhibitKey)=>x.items[key];
- const dialog=useRef<HTMLDialogElement>(null);const trigger=useRef<HTMLElement|null>(null);const field=useRef<HTMLDivElement>(null);
- const drag=useRef<Drag|null>(null),dragged=useRef(false),glide=useRef(new Map<HTMLElement,number>()),layer=useRef(5),closing=useRef(0);
+/** The software, as eight cards in a grid. Each opens a drawer with the detail and a way into the demo. */
+export function ProjectExhibits({selected,select,openDemo}:{selected:number|null;select:(i:number|null)=>void;openDemo:()=>void}){
+ const {t}=useCopy(),x=t.exhibits,words=(key:ExhibitKey)=>x.items[key];
+ const dialog=useRef<HTMLDialogElement>(null),trigger=useRef<HTMLElement|null>(null),closing=useRef(0);
  useEffect(()=>{const el=dialog.current;if(!el)return;
-  if(selected!==null){if(!trigger.current)trigger.current=document.activeElement as HTMLElement;el.classList.remove('is-closing');if(!el.open)el.showModal();motionBus.lenis?.stop();document.documentElement.classList.add('drawer-open')}
-  else if(el.open){el.classList.add('is-closing');const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;closing.current=window.setTimeout(()=>{el.classList.remove('is-closing');el.close();motionBus.lenis?.start();document.documentElement.classList.remove('drawer-open');trigger.current?.focus({preventScroll:true});trigger.current=null},reduced?0:420)}
+  if(selected!==null){if(!trigger.current)trigger.current=document.activeElement as HTMLElement;el.classList.remove('is-closing');if(!el.open)el.showModal();document.documentElement.classList.add('drawer-open')}
+  else if(el.open){el.classList.add('is-closing');const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;closing.current=window.setTimeout(()=>{el.classList.remove('is-closing');el.close();document.documentElement.classList.remove('drawer-open');trigger.current?.focus({preventScroll:true});trigger.current=null},reduced?0:300)}
   return()=>clearTimeout(closing.current)},[selected]);
- useEffect(()=>()=>{glide.current.forEach(id=>cancelAnimationFrame(id));motionBus.lenis?.start();document.documentElement.classList.remove('drawer-open')},[]);
+ useEffect(()=>()=>document.documentElement.classList.remove('drawer-open'),[]);
  const open=(i:number,from:HTMLElement)=>{trigger.current=from;select(i)};
- const bounds=(target:HTMLButtonElement)=>{const area=field.current!.parentElement!.getBoundingClientRect(),rect=target.getBoundingClientRect(),x=Number(target.dataset.dragX||0),y=Number(target.dataset.dragY||0);return {x,y,minX:area.left-rect.left+x,maxX:area.right-rect.right+x,minY:area.top-rect.top+y,maxY:area.bottom-rect.bottom+y}};
- const startDrag=(e:ReactPointerEvent<HTMLButtonElement>)=>{dragged.current=false;if(e.pointerType!=='mouse'||e.button!==0)return;const target=e.currentTarget;cancelAnimationFrame(glide.current.get(target)??0);drag.current={target,startX:e.clientX,startY:e.clientY,...bounds(target),samples:[[e.clientX,e.clientY,performance.now()]]};target.setPointerCapture(e.pointerId);target.style.zIndex=String(++layer.current)};
- const moveDrag=(e:ReactPointerEvent<HTMLButtonElement>)=>{const d=drag.current;if(!d)return;const dx=e.clientX-d.startX,dy=e.clientY-d.startY;if(Math.hypot(dx,dy)>6)dragged.current=true;if(!dragged.current)return;
-  place(d.target,Math.max(d.minX,Math.min(d.maxX,d.x+dx)),Math.max(d.minY,Math.min(d.maxY,d.y+dy)));d.target.classList.add('is-dragging');d.samples.push([e.clientX,e.clientY,performance.now()]);if(d.samples.length>6)d.samples.shift()};
- const endDrag=(e:ReactPointerEvent<HTMLButtonElement>)=>{const d=drag.current;drag.current=null;if(!d)return;d.target.classList.remove('is-dragging');if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);
-  if(!dragged.current||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  // Throw with inertia, bouncing softly off the section edges.
-  const [x0,y0,t0]=d.samples[0],[x1,y1,t1]=d.samples[d.samples.length-1],dt=Math.max(16,t1-t0);let vx=(x1-x0)/dt,vy=(y1-y0)/dt,x=Number(d.target.dataset.dragX),y=Number(d.target.dataset.dragY),last=performance.now();
-  const step=(now:number)=>{const ms=Math.min(32,now-last);last=now;x+=vx*ms;y+=vy*ms;const decay=Math.pow(.9,ms/16);vx*=decay;vy*=decay;
-   if(x<d.minX||x>d.maxX){x=Math.max(d.minX,Math.min(d.maxX,x));vx*=-.35}if(y<d.minY||y>d.maxY){y=Math.max(d.minY,Math.min(d.maxY,y));vy*=-.35}
-   place(d.target,x,y);if(Math.hypot(vx,vy)>.02)glide.current.set(d.target,requestAnimationFrame(step))};
-  glide.current.set(d.target,requestAnimationFrame(step))};
- const nudge=(e:ReactKeyboardEvent<HTMLButtonElement>)=>{const keys:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};const dir=keys[e.key];if(!dir)return;e.preventDefault();const b=bounds(e.currentTarget),amount=e.shiftKey?60:20;place(e.currentTarget,Math.max(b.minX,Math.min(b.maxX,b.x+dir[0]*amount)),Math.max(b.minY,Math.min(b.maxY,b.y+dir[1]*amount)))};
  const item=selected===null?null:exhibits[selected],text=item&&words(item.key);const next=selected===null?0:(selected+1)%exhibits.length;
- return <section className="lab-exhibits" id="approaches" data-reveal>
-  <div className="exhibit-heading"><h2>{x.heading}</h2><p data-scramble={x.hint} key={lang}>{x.hint}</p></div>
-  <div className="exhibit-field" ref={field}>{exhibits.map((ex,i)=><button key={ex.key} className={`exhibit exhibit-${i}`} style={{'--i':i} as CSSProperties} data-cursor={x.cursor} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onKeyDown={nudge} onClick={e=>{if(dragged.current&&e.detail!==0)return;open(i,e.currentTarget)}} aria-haspopup="dialog" aria-label={x.open.replace('{title}',words(ex.key).title)}><span className="exhibit-number">0{i+1}.</span><ExhibitObject kind={ex.key}/><span className="exhibit-caption">{words(ex.key).title}</span></button>)}</div>
-  <ol className="exhibit-key">{exhibits.map((ex,i)=><li key={`${ex.key}-${lang}`}><button onClick={e=>open(i,e.currentTarget)} aria-haspopup="dialog"><span>0{i+1}.</span><span data-scramble={words(ex.key).title.toUpperCase()}>{words(ex.key).title.toUpperCase()}</span></button></li>)}</ol>
-  <dialog ref={dialog} className="exhibit-drawer" data-lenis-prevent onCancel={e=>{e.preventDefault();select(null)}} onClick={e=>{if(e.target===e.currentTarget)select(null)}} aria-labelledby="exhibit-title">
-   {item&&text&&selected!==null&&<div className="drawer-grid" style={{'--tone':item.tone} as CSSProperties}>
+ return <section className="v2-section software" id="approaches" aria-labelledby="software-title" data-reveal>
+  <div className="section-head">
+   <p className="eyebrow">{x.eyebrow}</p>
+   <h2 id="software-title">{x.heading}</h2>
+   <p className="lede">{x.lede}</p>
+  </div>
+  <ul className="cards">{exhibits.map((ex,i)=>{const w=words(ex.key);return <li key={ex.key}><button className="card" onClick={e=>open(i,e.currentTarget)} aria-haspopup="dialog" aria-label={x.open.replace('{title}',w.title)}>
+   <span className="card-top label"><span>{number(i)}</span><span>{w.label}</span></span>
+   <ExhibitObject kind={ex.key}/>
+   <h3>{w.title}</h3>
+   <p className="card-desc">{w.desc}</p>
+  </button></li>})}</ul>
+  <dialog ref={dialog} className="exhibit-drawer" onCancel={e=>{e.preventDefault();select(null)}} onClick={e=>{if(e.target===e.currentTarget)select(null)}} aria-labelledby="exhibit-title">
+   {item&&text&&selected!==null&&<div className="drawer-grid">
     <div className="drawer-text">
-     <div className="drawer-top"><span>0{selected+1}.</span><span className="drawer-label">{text.label}</span><button onClick={()=>select(null)} className="drawer-close" aria-label={x.close}><X size={16}/></button></div>
+     <div className="drawer-top label"><span>{number(selected)}</span><span className="drawer-label">{text.label}</span><button onClick={()=>select(null)} className="drawer-close" aria-label={x.close}><X size={16}/></button></div>
      <h2 id="exhibit-title">{text.title}</h2>
      <p className="drawer-desc">{text.desc}</p><p className="drawer-desc">{text.detail}</p>
-     <ul className="drawer-points">{text.points.map(p=><li key={p}>{p}</li>)}</ul>
-     <div className="drawer-actions"><button className="lab-demo" onClick={()=>{select(null);openDemo(item.step)}}>{t.hero.demo} <ArrowUpRight size={15}/></button><small>{x.opensAt} {item.section.toUpperCase()}</small></div>
-     <button className="drawer-next" onClick={()=>select(next)}>{x.next} 0{next+1}. {words(exhibits[next].key).title.toUpperCase()} {x.arrow}</button>
+     <ul className="drawer-points label">{text.points.map(p=><li key={p}>{p}</li>)}</ul>
+     <div className="drawer-actions"><button className="button button-primary" onClick={()=>{select(null);openDemo()}}>{x.demo} <ArrowUpRight size={14}/></button></div>
+     <button className="text-link drawer-next" onClick={()=>select(next)}>{x.next} {number(next)} {words(exhibits[next].key).title}</button>
     </div>
-    <div className="drawer-visual"><span className="drawer-tag">{x.illustrative} {text.label}</span><ExhibitObject kind={item.key}/><div className="drawer-ruler" aria-hidden="true">{Array.from({length:9},(_,i)=><i key={i}>{i*10}</i>)}</div></div>
+    <div className="drawer-visual"><span className="label">{x.illustrative} {text.label}</span><ExhibitObject kind={item.key}/></div>
    </div>}
   </dialog>
  </section>

@@ -1,40 +1,65 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>About — Facade</title>
 <meta name="description" content="Facade helps renovation teams find unforeseen conditions behind walls before demolition. What it is, what is built, and what is still a concept.">
-<meta name="theme-color" content="#121212">
+<link rel="canonical" href="https://facade.build/about/">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Facade">
+<meta property="og:url" content="https://facade.build/about/">
+<meta property="og:title" content="About — Facade">
+<meta property="og:description" content="What Facade is, what is built, and what is still a concept.">
+<meta property="og:image" content="https://facade.build/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Facade: find unforeseen conditions before renovation begins.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" as="font" href="/fonts/NeueHaas.woff2" type="font/woff2" crossorigin>
 <link rel="preload" as="font" href="/fonts/PPNeueMontreal.woff2" type="font/woff2" crossorigin>
 </head>
-<body class="page-about">
-<div class="grid-lines" aria-hidden="true"><i class="cross x1 y1"></i><i class="cross x2 y1"></i><i class="cross x3 y1"></i><i class="cross x1 y2"></i><i class="cross x2 y2"></i><i class="cross x3 y2"></i></div>
-<header class="masthead light">
-  <a class="brand about-brand" href="/" aria-label="Facade, home"><svg class="logo-mark" viewBox="236 278 782 684" fill="currentColor" aria-hidden="true"><path d="M254 278H1000V341H254Z M236 920H1018V962H236Z M276 352H870L820 408L795 458L728 495L697 568L638 617L652 694L590 742L573 800L522 842L487 906H272V874L292 870V386L276 382ZM366 436V742H535V436Z M890 352H978V382L962 386V870L982 874V906H890Z M530 872H962V906H514Z M738 524H890V581H717Z M692 605L712 583L732 581L890 820V872H865Z"/></svg><span>Facade</span></a>
-  <nav class="menu-links" aria-label="Main"><a class="underline" href="/">Home</a><a class="underline" href="/demo">Demo ↗</a><a class="underline" href="/waitlist">Waitlist ↗</a></nav>
-  <button class="menu-toggle" aria-expanded="false" aria-controls="overlay-menu">Menu</button>
-</header>
-<div class="overlay-menu" id="overlay-menu"><a href="/">Home</a><a href="/demo">Demo ↗</a><a href="/waitlist">Waitlist ↗</a></div>
-
-<main class="about fade-in">
-  <h1>About Facade.</h1>
-  <div class="about-copy">
-    <p>Facade helps renovation teams find unforeseen conditions before renovation begins. A handheld scanner is rolled along a wall, and what it records is placed on a model of that wall, bay by bay: framing, ducts, piping and conduit, as evidence for the team to review.</p>
-    <p>On a $1M renovation, change orders add about $35,600 on average, and the largest share comes from existing conditions nobody could see. Facade is built to move that discovery before demolition, so the plan, the cost and the schedule are set with the wall still closed.</p>
-    <p class="muted">Facade is in development. The scanner shown on this site is a concept model: its radar bay and coil design are reserved space, not chosen parts, and no sensor has been validated for finding concealed services. The demo runs on synthetic data, and every reading in it is a lead for a person to confirm, not a finished survey.</p>
-    <p class="muted">Change-order figures: a 2018 study of 161 school renovation projects (1.45%, 1.36% and 0.75% of contract for unexpected conditions, design changes and owner changes), scaled to $1M. <a class="underline" href="https://oasis.library.unlv.edu/fac_articles/542/" target="_blank" rel="noreferrer">Source ↗</a></p>
-  </div>
-  <dl class="about-links">
-    <dt>W</dt><dd><a class="underline" href="/waitlist">Join the waitlist ↗</a></dd>
-    <dt>D</dt><dd><a class="underline" href="/demo">Try the demo ↗</a></dd>
-    <dt>H</dt><dd><a class="underline" href="/hardware">Hardware lab ↗</a></dd>
-  </dl>
-  <footer class="about-foot"><span>© 2026 Facade</span><a class="underline" href="/">Home</a></footer>
-</main>
+<body>
+<div class="lab-site" id="site">
+  <div class="lab-grid" aria-hidden="true"><i class="grid-cross c0"></i><i class="grid-cross c1"></i><i class="grid-cross c2"></i><i class="grid-cross c3"></i><i class="grid-cross c4"></i><i class="grid-cross c5"></i></div>
+  <header class="lab-header">
+    <a class="lab-brand" href="/" aria-label="Facade, home"><svg class="logo-mark" viewBox="236 278 782 684" fill="currentColor" aria-hidden="true"><path d="M254 278H1000V341H254Z M236 920H1018V962H236Z M276 352H870L820 408L795 458L728 495L697 568L638 617L652 694L590 742L573 800L522 842L487 906H272V874L292 870V386L276 382ZM366 436V742H535V436Z M890 352H978V382L962 386V870L982 874V906H890Z M530 872H962V906H514Z M738 524H890V581H717Z M692 605L712 583L732 581L890 820V872H865Z"/></svg><span>Facade</span></a>
+    <nav class="lab-nav" aria-label="Main"><a href="/#inside">Inside the wall</a><a href="/#field-kit">Scanner</a><a href="/#costs">Numbers</a><a href="/demo">Demo ↗</a></nav>
+  </header>
+  <main>
+    <section class="v2-section about">
+      <div class="split">
+        <div class="section-head">
+          <p class="eyebrow">About</p>
+          <h1>About Facade.</h1>
+          <p class="lede">What it is, what is built, and what is still a concept.</p>
+          <a class="button button-dark" href="/waitlist">Join the waitlist <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+        </div>
+        <div class="about-copy">
+          <p class="body">Facade helps renovation teams find unforeseen conditions before renovation begins. A handheld scanner is rolled along a wall, and what it records is placed on a model of that wall, bay by bay: framing, ducts, piping and conduit, as evidence for the team to review.</p>
+          <p class="body">On a $1M renovation, change orders add about $35,600 on average, and the largest share comes from existing conditions nobody could see. Facade is built to move that discovery before demolition, so the plan, the cost and the schedule are set with the wall still closed.</p>
+          <p class="body muted">Facade is in development. The scanner shown on this site is a concept model: its radar bay and coil design are reserved space, not chosen parts, and no sensor has been validated for finding concealed services. The demo runs on synthetic data, and every reading in it is a lead for a person to confirm, not a finished survey.</p>
+          <p class="body muted">Change-order figures: a 2018 study of 161 school renovation projects (1.45%, 1.36% and 0.75% of contract for unexpected conditions, design changes and owner changes), scaled to $1M.</p>
+          <p class="about-links"><a class="text-link out" href="https://oasis.library.unlv.edu/fac_articles/542/" target="_blank" rel="noreferrer">Read the study</a><a class="text-link out" href="/demo">Try the demo</a><a class="text-link out" href="/hardware">Hardware lab</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="lab-footer">
+    <div class="footer-main">
+      <a class="lab-brand" href="/" aria-label="Facade, home"><svg class="logo-mark" viewBox="236 278 782 684" fill="currentColor" aria-hidden="true"><path d="M254 278H1000V341H254Z M236 920H1018V962H236Z M276 352H870L820 408L795 458L728 495L697 568L638 617L652 694L590 742L573 800L522 842L487 906H272V874L292 870V386L276 382ZM366 436V742H535V436Z M890 352H978V382L962 386V870L982 874V906H890Z M530 872H962V906H514Z M738 524H890V581H717Z M692 605L712 583L732 581L890 820V872H865Z"/></svg><span>Facade</span></a>
+      <p class="footer-tagline">Plan renovation work with the wall still closed.</p>
+      <nav class="footer-nav" aria-label="Footer"><a href="/demo">Demo</a><a href="/hardware">Hardware lab</a><a href="/waitlist">Waitlist</a><a href="/about/">About</a></nav>
+    </div>
+    <div class="footer-legal">
+      <p>Facade is in development. The scanner is a concept model, the demo runs on sample data, and the cost figures are estimates.</p>
+      <p>© 2026 Facade</p>
+    </div>
+  </footer>
+</div>
 <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

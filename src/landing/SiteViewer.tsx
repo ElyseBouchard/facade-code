@@ -4,13 +4,14 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {debugMode,diag,diagCanvas,diagFrame,diagView} from './diag';
 import {guardContext,StillPicture} from './stills';
+import {ViewerLoading} from './WallHero';
 import {LineSegments2} from 'three/addons/lines/LineSegments2.js';
 import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js';
 import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 
 import {COSTS,SAVED,type Story} from './costData';
-export type SiteText={aria:string;loading:string;failed:string;unavailable:string;cursor:string;names:[string,string,string];savedName:string;legend:string};
+export type SiteText={aria:string;loading:string;failed:string;unavailable:string;names:[string,string,string];savedName:string;legend:string};
 
 /** One red line per $1,000: 15, 14 and 8 lines, the leftmost of each drawn partway for the remainder ($14,500 is
  * 14 lines and a half). The illustrative saving takes the 5 rightmost lines of the first fan. */
@@ -182,7 +183,6 @@ export default function SiteViewer({story,text,money}:{story:RefObject<Story>;te
    draco.dispose();renderer.dispose();canvas.remove();labelHost.replaceChildren()};
  },[story]);
  if(status==='still')return <div className="site-viewer is-still" role="img" aria-label={text.aria}><StillPicture name="site" className="viewer-still"/><p className="site-legend" aria-hidden="true"><i/>{text.legend}</p></div>;
- const message=status==='loading'?text.loading:'';
- return <div className="site-viewer" data-cursor={text.cursor}><div ref={host} className="site-canvas"/><div ref={labelsRef} className="site-labels" aria-hidden="true"/>
-  <p className="site-legend" aria-hidden="true"><i/>{text.legend}</p>{message&&<p className="wall-status" role="status">{message}</p>}</div>
+ return <div className="site-viewer"><div ref={host} className="site-canvas"/><div ref={labelsRef} className="site-labels" aria-hidden="true"/>
+  <p className="site-legend" aria-hidden="true"><i/>{text.legend}</p>{status==='loading'&&<ViewerLoading label={text.loading}/>}</div>
 }

@@ -1,8 +1,7 @@
 import {forwardRef,lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react';
-import {Words} from './LandingDetails';
 import {languages,useCopy} from './i18n';
 import {COSTS,SAVED,TOTAL,type Story} from './costData';
-import {useStartWhenNear} from './WallHero';
+import {useStartWhenNear,ViewerLoading} from './WallHero';
 const SiteViewer=lazy(()=>import('./SiteViewer'));
 
 /** The study behind the change-order figures (2018, 161 school renovations, Las Vegas Valley). */
@@ -10,7 +9,7 @@ const STUDY='https://oasis.library.unlv.edu/fac_articles/542/';
 const clamp=(x:number)=>Math.min(1,Math.max(0,x));
 const ease=(x:number)=>{const t=clamp(x);return t*t*(3-2*t)};
 
-/** A dollar amount: read once by screen readers, and flickering through symbols on hover. */
+/** A dollar amount, read once by screen readers while the visible copy counts up. */
 const Amount=forwardRef<HTMLSpanElement,{value:string}>(({value},ref)=><strong dir="ltr" className="amount">
  <span className="sr-only">{value}</span><span aria-hidden="true" ref={ref}>{value}</span></strong>);
 
@@ -31,7 +30,7 @@ export function CostSection(){
   // The count only runs while the section is on screen, so the page can rest everywhere else.
   let frame=0,last=performance.now(),onScreen=false;
   const watch=new IntersectionObserver(e=>{onScreen=!!e[0]?.isIntersecting;if(onScreen&&!frame){last=performance.now();frame=requestAnimationFrame(tick)}});
-  const write=(node:HTMLElement|null,value:number)=>{if(!node||node.dataset.scrambling)return;const s=moneyRef.current(value);if(node.textContent!==s)node.textContent=s};
+  const write=(node:HTMLElement|null,value:number)=>{if(!node)return;const s=moneyRef.current(value);if(node.textContent!==s)node.textContent=s};
   const tick=(now:number)=>{frame=onScreen?requestAnimationFrame(tick):0;const dt=Math.min(.1,(now-last)/1000);last=now;const k=clock.current,s=story.current;
    if(reduced){s.rise=[1,1,1];s.save=k.mode==='savings'?1:0}
    else if(k.start>=0){const time=(now-k.start)/1000;
@@ -50,16 +49,16 @@ export function CostSection(){
   setMode(next)};
  const replay=()=>{const k=clock.current;k.start=performance.now();k.auto=true;story.current.save=0;setMode('typical')};
 
- const viewerText={aria:c.aria,loading:c.loading,failed:c.failed,unavailable:c.unavailable,cursor:c.cursor,names:c.short as [string,string,string],savedName:c.savedShort,legend:c.legend};
+ const viewerText={aria:c.aria,loading:c.loading,failed:c.failed,unavailable:c.unavailable,names:c.short as [string,string,string],savedName:c.savedShort,legend:c.legend};
  return <section ref={section} className="cost-section" id="costs" aria-labelledby="cost-title" data-reveal>
   <div className={`cost-body mode-${mode}`}>
    <div className="cost-stage">
-    <div className="cost-head">
-     <p className="bracket lab-micro" data-scramble={c.eyebrow} key={lang}>{c.eyebrow}</p>
-     <h2 id="cost-title"><Words text={c.title[0]}/><br/><Words text={c.title[1]} from={c.title[0].split(' ').length}/></h2>
-     <p className="cost-lede">{c.lede}</p>
+    <div className="cost-head section-head">
+     <p className="eyebrow">{c.eyebrow}</p>
+     <h2 id="cost-title">{c.title[0]}<br/>{c.title[1]}</h2>
+     <p className="lede">{c.lede}</p>
     </div>
-    <div className="cost-frame">{start?<Suspense fallback={<p className="wall-status">{c.loading}</p>}><SiteViewer story={story} text={viewerText} money={money}/></Suspense>:<p className="wall-status">{c.loading}</p>}</div>
+    <div className="cost-frame">{start?<Suspense fallback={<ViewerLoading label={c.loading}/>}><SiteViewer story={story} text={viewerText} money={money}/></Suspense>:<ViewerLoading label={c.loading}/>}</div>
    </div>
    <div className="cost-panel">
     <ol className="cost-rows">
@@ -71,13 +70,13 @@ export function CostSection(){
       <span>{c.scenarios[i]}</span><Amount value={money(i===0?TOTAL:TOTAL-SAVED)}/></button>)}
     </div>
     <div className="cost-savings">
-     <span className="cost-tag">[ {c.savingsTag} ]</span>
+     <span className="eyebrow">{c.savingsTag}</span>
      <p className="cost-big"><Amount value={money(SAVED)}/></p>
      <p className="cost-line">{c.savingsLine}</p>
      <p className="cost-net">{c.net}</p>
     </div>
-    <p className="cost-source">{c.source} <a href={STUDY} target="_blank" rel="noreferrer">{c.sourceLink}</a></p>
-    <div className="cost-links"><a className="cost-calc" href="/savings">{c.calc}</a><button className="cost-replay" onClick={replay}>{c.replay}</button></div>
+    <p className="cost-source">{c.source} <a className="text-link out" href={STUDY} target="_blank" rel="noreferrer">{c.sourceLink}</a></p>
+    <div className="cost-links"><a className="text-link out" href="/savings">{c.calc}</a><button className="text-link cost-replay" onClick={replay}>{c.replay}</button></div>
    </div>
   </div>
  </section>

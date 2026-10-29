@@ -60,7 +60,6 @@ function Footer(){
   <div className="footer-brand"><span className="footer-logo"><LogoMark/><MixedWordmark/></span><p>{t.footer.tagline}<br/><span>{t.footer.judgment} © {new Date().getFullYear()} Facade</span></p></div>
   <a className="footer-top" href="#top"><span className="top-box" aria-hidden="true"><i/></span>{t.footer.top}</a>
   <div className="footer-reach"><p>{t.footer.cont[0]}<br/>{t.footer.cont[1]}</p><nav className="lab-pills" aria-label={t.footer.navLabel}><a href="/savings">{t.footer.pills[0]}</a><a href="/waitlist">{t.footer.pills[1]}</a><a href="/hardware">{t.footer.pills[2]}</a></nav></div>
-  <small className="footer-note">{t.footer.note}</small>
  </>
 }
 

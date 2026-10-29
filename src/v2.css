@@ -38,7 +38,7 @@
 /* The letters come in with a soft flicker: never below 40% and fully white within about a second. */
 .lab-site .v2-hero-title .split-letter { animation: v2-flicker .42s steps(1) both; animation-delay: calc(var(--d) * 14ms + .08s); }
 @keyframes v2-flicker { 0% { opacity: .4; } 25% { opacity: 1; } 45% { opacity: .62; } 65% { opacity: 1; } 82% { opacity: .82; } 100% { opacity: 1; } }
-.lab-site .v2-hero-sub { margin-top: 28px; max-width: 340px; font: var(--t-s)/1.2 var(--ui); text-transform: uppercase; }
+.lab-site .v2-hero-sub { margin-top: 28px; max-width: 390px; font: calc(var(--t-s) * 1.16)/1.25 var(--ui); text-transform: uppercase; }
 .v2-hero .hero-actions { margin-top: 28px; }
 /* The waitlist beside the demo: the same button, white. */
 .lab-site .v2-waitlist { display: flex; justify-content: space-between; align-items: center; gap: 14px; min-width: 190px; padding: .62em .7em .55em;

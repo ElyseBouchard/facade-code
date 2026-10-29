@@ -219,7 +219,7 @@ html.dark, .page-about { background: var(--dark); color: #ece8e2; }
 .page-about .grid-lines .cross { background: var(--dark); }
 .about { position: relative; z-index: 1; min-height: 100svh; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 40px 0; padding: 120px var(--gm) var(--gm); align-content: start; }
 .about h1 { grid-column: 1 / span 4; font-size: var(--t-xl); margin-bottom: 30px; }
-.about-copy { grid-column: 1 / span 2; display: grid; gap: 1.2em; align-content: start; padding-right: 10%; font: 400 var(--t-s)/1.25 var(--ui); text-transform: uppercase; }
+.about-copy { grid-column: 1 / span 2; display: grid; gap: 1.2em; align-content: start; padding-right: 10%; font: 400 var(--t-m)/1.5 var(--ui); text-transform: uppercase; }
 .about-copy .muted { color: #8d8882; }
 .about-links { grid-column: 5 / span 2; display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-content: start; font: 400 var(--t-s)/1.1 var(--ui); text-transform: uppercase; }
 .about-links dt { color: var(--signal); font-family: var(--mono); }
@@ -272,5 +272,5 @@ html.dark, .page-about { background: var(--dark); color: #ece8e2; }
 .about-brand .logo-mark { height: 1.12em; width: auto; translate: 0 -.05em; }
 
 /* Small text: Manrope in normal case; the page title and the logo stay as designed. */
-:root { --ui: Manrope, 'Helvetica Neue', Arial, sans-serif; --mono: Manrope, 'Helvetica Neue', Arial, sans-serif; }
+:root { --ui: Manrope, 'Helvetica Neue', Arial, sans-serif; --mono: Manrope, 'Helvetica Neue', Arial, sans-serif; --t-m: max(14px, .98vw); --t-s: max(13.5px, .94vw); --t-xs: max(13px, .9vw); }
 body :not(h1, h1 *, .brand, .brand *) { text-transform: none !important; }

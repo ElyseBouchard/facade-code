@@ -84,5 +84,10 @@
 
 /* ---------- small text: Manrope in normal case; the display headings, the big statements and the logos stay as designed ---------- */
 .lab-site { --ui: Manrope, 'Helvetica Neue', Arial, sans-serif; }
-@media (min-width: 768px) { .lab-site { --t-m: max(12px, .92vw); --t-s: max(12px, .84vw); --t-xs: max(11.5px, .78vw); --t-xxs: max(11px, .72vw); } }
+/* Manrope reads smaller than the old capitals did, so the small sizes are a step larger. */
+@media (min-width: 768px) { .lab-site { --t-m: max(14px, .98vw); --t-s: max(13.5px, .94vw); --t-xs: max(13px, .9vw); --t-xxs: max(12px, .84vw); } }
+@media (max-width: 767px) { .lab-site { --t-s: 3.75vw; --t-xs: 3.55vw; --t-xxs: 3.3vw; } }
+.lab-site :is(.site-label span, .site-legend, .cost-tag) { font-size: 12px; }
+.lab-site :is(.cost-scenario > span, .cost-net, .cost-source, .cost-replay) { font-size: 12.5px; }
+.lab-site .log-lines { font-size: 8.5px; }
 .lab-site :not(h1, h1 *, h2, h2 *, h3, h3 *, .statement, .statement *, .lab-brand, .lab-brand *, .mixed-wordmark, .mixed-wordmark *) { text-transform: none !important; }

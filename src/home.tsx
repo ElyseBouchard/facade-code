@@ -7,7 +7,7 @@ import './v2.css';
 import {useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {createPortal} from 'react-dom';
-import {ArrowUpRight,Plus} from 'lucide-react';
+import {Plus} from 'lucide-react';
 import {copy,LangProvider,wordOffsets} from './landing/i18n';
 import {useLandingMotion} from './landing/useLandingMotion';
 import {GridOverlay,MixedWordmark,Words,Spark,Node,Connectors,WireCube,InlineIcon,FieldDrawing,FieldCollage,RealityGlobe,IndexThumb} from './landing/LandingDetails';
@@ -94,10 +94,10 @@ function Sections(){
   <FieldCollage/>
   <ProjectExhibits selected={selected} select={setSelected} openDemo={()=>{location.href="/demo"}}/>
   <section className="lab-savings" data-reveal><div className="lab-savings-art" data-parallax="40" aria-hidden="true"><div className="savings-dial" data-spin="-.025">{Array.from({length:24},(_,i)=><i key={i} style={{rotate:`${i*15}deg`}}/>)}</div><span className="lab-hour">h</span></div>
-   <div className="savings-copy"><h2><Words text={t.savings.title[0]}/><br/><Words text={t.savings.title[1]} from={wordOffsets(t.savings.title)[1]}/></h2><p>{t.savings.body}</p><a className="lab-action" href="/savings">{t.savings.action} <ArrowUpRight size={15}/></a></div></section>
+   <div className="savings-copy"><h2><Words text={t.savings.title[0]}/><br/><Words text={t.savings.title[1]} from={wordOffsets(t.savings.title)[1]}/></h2><p>{t.savings.body}</p><a className="lab-action" href="/savings">{t.savings.action}</a></div></section>
   <section className="lab-questions" id="questions" data-reveal><h2 className="questions-title"><Words text={t.questions.title[0]}/> <Spark/> <Words text={t.questions.title[1]} from={wordOffsets(t.questions.title)[1]}/></h2>
    <div className="questions-cols"><p className="questions-intro">{t.questions.intro}</p><div className="questions-list">{t.questions.items.map(([q,a])=><details key={q}><summary><span>{q}</span><Plus size={15}/></summary><p>{a}</p></details>)}</div></div></section>
-  <section className="lab-join" data-reveal><h2><Words text={t.join.title[0]}/><br/><Words text={t.join.title[1]} from={wordOffsets(t.join.title)[1]}/></h2><a className="lab-action" href="/waitlist">{t.join.action} <ArrowUpRight size={16}/></a></section>
+  <section className="lab-join" data-reveal><h2><Words text={t.join.title[0]}/><br/><Words text={t.join.title[1]} from={wordOffsets(t.join.title)[1]}/></h2><a className="lab-action" href="/waitlist">{t.join.action}</a></section>
   {footer&&createPortal(<Footer/>,footer)}
  </LangProvider>
 }

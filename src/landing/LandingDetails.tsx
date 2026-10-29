@@ -23,7 +23,7 @@ const wordmarkFonts=['f-bitter','f-haas','f-cyber','f-montreal','f-bitter','f-ha
 const wordmarkTones=['t0','t1','t0','t2','t0','t1','t0','t2','t0'];
 /** The FACADE wordmark set in all four reality typefaces, like a specimen. */
 export function MixedWordmark({className=''}:{className?:string}){
- return <span className={`mixed-wordmark ${className}`} aria-label="Facade" role="img">{[...'FACADE'].map((c,i)=>c===' '?<span key={i} className="mw-space"/>:<span key={i} aria-hidden="true" className={`mw ${wordmarkFonts[i%9]} ${wordmarkTones[i%9]}`} style={vars({'--i':i})}>{c}</span>)}<svg className="mw-accent" viewBox="0 0 30 14" aria-hidden="true"><path d="M2 12 28 2M18 2h10v10" fill="none" stroke="currentColor"/></svg></span>
+ return <span className={`mixed-wordmark ${className}`} aria-label="Facade" role="img">{[...'FACADE'].map((c,i)=>c===' '?<span key={i} className="mw-space"/>:<span key={i} aria-hidden="true" className={`mw ${wordmarkFonts[i%9]} ${wordmarkTones[i%9]}`} style={vars({'--i':i})}>{c}</span>)}</span>
 }
 
 export function GridOverlay(){return <div className="lab-grid" aria-hidden="true">{[0,1,2,3,4,5,6,7,8].map(i=><i key={i} className={`grid-cross c${i}`}/>)}</div>}

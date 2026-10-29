@@ -1,5 +1,4 @@
 import {Component,Fragment,lazy,Suspense,useEffect,useLayoutEffect,useRef,useState,type ReactNode,type RefObject} from 'react';
-import {ArrowUpRight} from 'lucide-react';
 import {SplitLetters} from './LandingDetails';
 import type {WallSystem} from './WallViewer';
 import {useCopy} from './i18n';
@@ -56,7 +55,7 @@ export function WallHero({reality,cycle,ready,openDemo}:{reality:number;cycle:nu
   <div className="hero-copy">
    <h1 ref={title} id="lab-title" className="hero-title" key={`${cycle}-${h.titleText}`}><span className="sr-only">{h.titleText}</span>{h.title.map((line,i)=><Fragment key={i}>{i>0&&<br/>}<SplitLetters text={line}/></Fragment>)}</h1>
    <p className="hero-sub">{h.sub}</p>
-   <div className="hero-actions"><button className="lab-demo" onClick={()=>openDemo()} disabled={!ready}>{h.demo} <ArrowUpRight size={14}/></button><nav className="hero-links" aria-label={h.linksLabel}><a href="/savings">{h.savings}</a><a href="/waitlist">{h.waitlist}</a></nav></div>
+   <div className="hero-actions"><button className="lab-demo" onClick={()=>openDemo()} disabled={!ready}>{h.demo}</button><nav className="hero-links" aria-label={h.linksLabel}><a href="/savings">{h.savings}</a><a href="/waitlist">{h.waitlist}</a></nav></div>
   </div>
   <div className="wall-frame"><ViewerBoundary fallback={<p className="wall-status" role="status">{t.wall.failed}</p>}><Suspense fallback={<p className="wall-status">{t.wall.loading}</p>}><WallViewer reality={reality} focus={hovered??pinned} scroll={progress} onExploded={setExploded} text={t.wall}/></Suspense></ViewerBoundary></div>
   <div className="wall-legend" role="group" aria-label={h.legendLabel}>{systems.map((key,i)=>{const [letter,name]=h.systems[i];return <button key={key} className={`legend-item system-${key}`} aria-pressed={pinned===key} onPointerEnter={()=>setHovered(key)} onPointerLeave={()=>setHovered(null)} onFocus={()=>setHovered(key)} onBlur={()=>setHovered(null)} onClick={()=>setPinned(p=>p===key?null:key)}><i aria-hidden="true"/><b>{letter}</b>{name}</button>})}</div>

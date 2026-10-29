@@ -570,8 +570,6 @@ html:lang(ar) .lab-site :is(h1,h2,h3,p,li,summary,small){direction:rtl}
 .site-label b{font:400 22px/1 var(--haas);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums;pointer-events:auto;cursor:default}
 .site-label span{font:400 10px/1 var(--ui);text-transform:uppercase;color:var(--muted)}
 .site-label.cat-0 b,.site-label.saved b,.site-label.saved span{color:var(--red)}
-.site-legend{position:absolute;left:var(--gm);bottom:6px;display:flex;align-items:center;gap:8px;margin:0;font:400 10px/1 var(--ui);text-transform:uppercase;color:var(--muted);pointer-events:none}
-.site-legend i{width:16px;height:9px;background:repeating-linear-gradient(90deg,var(--red) 0 1px,transparent 1px 3px)}
 .cost-panel{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-content:start;margin-right:var(--gm);padding:max(76px,11vh) 0 48px}
 .amount{font-variant-numeric:tabular-nums;cursor:default}
 .cost-rows{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}

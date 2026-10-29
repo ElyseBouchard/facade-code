@@ -1,5 +1,5 @@
 import {useEffect,useRef,type CSSProperties,type KeyboardEvent as ReactKeyboardEvent,type PointerEvent as ReactPointerEvent} from 'react';
-import {ArrowUpRight,X} from 'lucide-react';
+import {X} from 'lucide-react';
 import {motionBus} from './useLandingMotion';
 import {useCopy,type Copy} from './i18n';
 
@@ -70,7 +70,7 @@ export function ProjectExhibits({selected,select,openDemo}:{selected:number|null
      <h2 id="exhibit-title">{text.title}</h2>
      <p className="drawer-desc">{text.desc}</p><p className="drawer-desc">{text.detail}</p>
      <ul className="drawer-points">{text.points.map(p=><li key={p}>{p}</li>)}</ul>
-     <div className="drawer-actions"><button className="lab-demo" onClick={()=>{select(null);openDemo(item.step)}}>{t.hero.demo} <ArrowUpRight size={15}/></button></div>
+     <div className="drawer-actions"><button className="lab-demo" onClick={()=>{select(null);openDemo(item.step)}}>{t.hero.demo}</button></div>
      <button className="drawer-next" onClick={()=>select(next)}>{x.next} 0{next+1}. {words(exhibits[next].key).title} {x.arrow}</button>
     </div>
     <div className="drawer-visual"><ExhibitObject kind={item.key}/></div>

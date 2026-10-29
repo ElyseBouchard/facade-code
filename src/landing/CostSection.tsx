@@ -50,7 +50,7 @@ export function CostSection(){
   setMode(next)};
  const replay=()=>{const k=clock.current;k.start=performance.now();k.auto=true;story.current.save=0;setMode('typical')};
 
- const viewerText={aria:c.aria,loading:c.loading,failed:c.failed,unavailable:c.unavailable,cursor:c.cursor,names:c.short as [string,string,string],savedName:c.savedShort,legend:c.legend};
+ const viewerText={aria:c.aria,loading:c.loading,failed:c.failed,unavailable:c.unavailable,cursor:c.cursor,names:c.short as [string,string,string],savedName:c.savedShort};
  return <section ref={section} className="cost-section" id="costs" aria-labelledby="cost-title" data-reveal>
   <div className={`cost-body mode-${mode}`}>
    <div className="cost-stage">

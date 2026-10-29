@@ -11,12 +11,12 @@ const en={
  hero:{
   title:['FIND UNFORESEEN','CONDITIONS BEFORE','RENOVATION BEGINS.'],titleText:'Find unforeseen conditions before renovation begins.',
   sub:'Facade uses scanning technology to help renovation teams see what’s behind walls and plan their work before demolition.',
-  demo:'Try the demo',savings:'Savings ↗',waitlist:'Waitlist ↗',linksLabel:'Savings and waitlist',
+  demo:'Try the demo',savings:'Savings',waitlist:'Waitlist',linksLabel:'Savings and waitlist',
   legendLabel:'What’s inside the wall',systems:[['M','Heating and air'],['E','Electrical'],['P','Plumbing']],
   hintOpen:'Taken apart / drag to turn',hintClosed:'Scroll or drag to take it apart',
   caption:'Sample wall / for illustration',scroll:'Scroll',
  },
- inside:{eyebrow:'Inside the wall / 01',title:['See what’s','inside the wall.'],lede:'Behind the drywall are pipes, wires and air ducts. Scroll down and this sample wall comes apart, one layer at a time.'},
+ inside:{eyebrow:'Inside the wall / 01',title:['See what’s','inside the wall.'],lede:'Behind the drywall are pipes, wires and air ducts. In a typical 2×4 wall they share 3½-inch-deep cavities between studs set 16 inches apart, packed in with insulation.'},
  wall:{
   aria:'A sample wall, opened up: metal studs, an air duct, drain pipes, copper water pipes, an electrical panel with its wiring, and insulation, behind a sheet of drywall. Scroll or drag to take it apart; arrow keys turn it.',
   loading:'Loading the wall',unavailable:'3D view unavailable in this browser',failed:'Wall unavailable',cursor:'Drag to take apart',
@@ -25,7 +25,7 @@ const en={
  kit:{
   eyebrow:'The scanner / 02',title:['The scanner,','taken apart.'],
   lede:'A concept for a handheld tool you roll along a wall. It has a heat camera, a metal sensor and a wheel that measures how far it has gone, with room saved for radar.',
-  link:'See the hardware ↗',hintOpen:'Taken apart',hintClosed:'Scroll or drag to take it apart',caption:'Concept model / not final',
+  link:'See the hardware',hintOpen:'Taken apart',hintClosed:'Scroll or drag to take it apart',caption:'Concept model / not final',
   viewer:{
    aria:'The Facade scanner, a concept model: shell and handle, sensor nose, heat camera, controller board, USB ports, space for radar, metal sensor, measuring wheel and screws. Scroll or drag to take it apart; arrow keys turn it.',
    loading:'Loading the scanner',unavailable:'3D view unavailable in this browser',failed:'Scanner unavailable',cursor:'Drag to take apart',
@@ -80,7 +80,7 @@ const en={
   tagline:'See behind the wall before you open it.',judgment:'Your engineer makes the call.',top:'Top',cont:['More','here:'],navLabel:'Footer',pills:['Savings','Waitlist','Hardware'],
   note:'Facade is in development. The scanner is a concept model and the demo uses sample data. Savings are estimates based on numbers you can change.',
  },
- costs:{eyebrow:'The numbers / 03',title:['What surprises','cost.'],lede:'On a $1M renovation, surprises add about $35,600. The biggest part comes from things nobody could see.',rows:['Hidden problems','Design changes','Owner changes'],short:['Hidden','Design','Owner'],total:'Total extra',scenarios:['Found during the work','1 in 3 found before'],modesLabel:'Compare',replay:'Play again',savingsTag:'Example',savingsLine:'saved if a third of the hidden problems are found before work starts.',net:'Before the cost of scanning and checking.',source:'Based on a 2018 study of 161 school renovations, scaled to $1M. Estimates, not quotes.',sourceLink:'Study ↗',calc:'Work out your own ↗',savedShort:'Saved',legend:'1 line = $1,000',aria:'A renovation site drawn in lines. Red lines, one per $1,000, rise from where each surprise comes from: $14,500 hidden problems, $13,600 design changes, $7,500 owner changes. Finding a third of the hidden problems early removes 5 lines, or $5,000.',loading:'Loading the site',failed:'Site unavailable',unavailable:'3D view unavailable in this browser',cursor:'Drag to look around'},
+ costs:{eyebrow:'The numbers / 03',title:['What surprises','cost.'],lede:'On a $1M renovation, surprises add about $35,600. The biggest part comes from things nobody could see.',rows:['Hidden problems','Design changes','Owner changes'],short:['Hidden','Design','Owner'],total:'Total extra',scenarios:['Found during the work','1 in 3 found before'],modesLabel:'Compare',replay:'Play again',savingsTag:'Example',savingsLine:'saved if a third of the hidden problems are found before work starts.',net:'Before the cost of scanning and checking.',source:'Based on a 2018 study of 161 school renovations, scaled to $1M. Estimates, not quotes.',sourceLink:'Study',calc:'Work out your own',savedShort:'Saved',aria:'A renovation site drawn in lines. Red lines, one per $1,000, rise from where each surprise comes from: $14,500 hidden problems, $13,600 design changes, $7,500 owner changes. Finding a third of the hidden problems early removes 5 lines, or $5,000.',loading:'Loading the site',failed:'Site unavailable',unavailable:'3D view unavailable in this browser',cursor:'Drag to look around'},
 };
 export type Copy=typeof en;
 

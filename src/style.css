@@ -270,3 +270,7 @@ html.dark, .page-about { background: var(--dark); color: #ece8e2; }
 /* The logo beside the name in the about page header. */
 .about-brand { display: inline-flex; align-items: center; gap: .38em; }
 .about-brand .logo-mark { height: 1.12em; width: auto; translate: 0 -.05em; }
+
+/* Small text: Manrope in normal case; the page title and the logo stay as designed. */
+:root { --ui: Manrope, 'Helvetica Neue', Arial, sans-serif; --mono: Manrope, 'Helvetica Neue', Arial, sans-serif; }
+body :not(h1, h1 *, .brand, .brand *) { text-transform: none !important; }

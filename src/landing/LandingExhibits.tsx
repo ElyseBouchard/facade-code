@@ -62,7 +62,7 @@ export function ProjectExhibits({selected,select,openDemo}:{selected:number|null
  return <section className="lab-exhibits" id="approaches" data-reveal>
   <div className="exhibit-heading"><h2>{x.heading}</h2></div>
   <div className="exhibit-field" ref={field}>{exhibits.map((ex,i)=><button key={ex.key} className={`exhibit exhibit-${i}`} style={{'--i':i} as CSSProperties} data-cursor={x.cursor} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onKeyDown={nudge} onClick={e=>{if(dragged.current&&e.detail!==0)return;open(i,e.currentTarget)}} aria-haspopup="dialog" aria-label={x.open.replace('{title}',words(ex.key).title)}><span className="exhibit-number">0{i+1}.</span><ExhibitObject kind={ex.key}/><span className="exhibit-caption">{words(ex.key).title}</span></button>)}</div>
-  <ol className="exhibit-key">{exhibits.map((ex,i)=><li key={`${ex.key}-${lang}`}><button onClick={e=>open(i,e.currentTarget)} aria-haspopup="dialog"><span>0{i+1}.</span><span data-scramble={words(ex.key).title.toUpperCase()}>{words(ex.key).title.toUpperCase()}</span></button></li>)}</ol>
+  <ol className="exhibit-key">{exhibits.map((ex,i)=><li key={`${ex.key}-${lang}`}><button onClick={e=>open(i,e.currentTarget)} aria-haspopup="dialog"><span>0{i+1}.</span><span data-scramble={words(ex.key).title}>{words(ex.key).title}</span></button></li>)}</ol>
   <dialog ref={dialog} className="exhibit-drawer" data-lenis-prevent onCancel={e=>{e.preventDefault();select(null)}} onClick={e=>{if(e.target===e.currentTarget)select(null)}} aria-labelledby="exhibit-title">
    {item&&text&&selected!==null&&<div className="drawer-grid" style={{'--tone':item.tone} as CSSProperties}>
     <div className="drawer-text">
@@ -71,7 +71,7 @@ export function ProjectExhibits({selected,select,openDemo}:{selected:number|null
      <p className="drawer-desc">{text.desc}</p><p className="drawer-desc">{text.detail}</p>
      <ul className="drawer-points">{text.points.map(p=><li key={p}>{p}</li>)}</ul>
      <div className="drawer-actions"><button className="lab-demo" onClick={()=>{select(null);openDemo(item.step)}}>{t.hero.demo} <ArrowUpRight size={15}/></button></div>
-     <button className="drawer-next" onClick={()=>select(next)}>{x.next} 0{next+1}. {words(exhibits[next].key).title.toUpperCase()} {x.arrow}</button>
+     <button className="drawer-next" onClick={()=>select(next)}>{x.next} 0{next+1}. {words(exhibits[next].key).title} {x.arrow}</button>
     </div>
     <div className="drawer-visual"><ExhibitObject kind={item.key}/></div>
    </div>}

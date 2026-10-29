@@ -81,3 +81,8 @@
 @media (prefers-reduced-motion: reduce) {
   .lab-site .v2-hero-title .split-letter { animation: none; }
 }
+
+/* ---------- small text: Manrope in normal case; the display headings, the big statements and the logos stay as designed ---------- */
+.lab-site { --ui: Manrope, 'Helvetica Neue', Arial, sans-serif; }
+@media (min-width: 768px) { .lab-site { --t-m: max(12px, .92vw); --t-s: max(12px, .84vw); --t-xs: max(11.5px, .78vw); --t-xxs: max(11px, .72vw); } }
+.lab-site :not(h1, h1 *, h2, h2 *, h3, h3 *, .statement, .statement *, .lab-brand, .lab-brand *, .mixed-wordmark, .mixed-wordmark *) { text-transform: none !important; }

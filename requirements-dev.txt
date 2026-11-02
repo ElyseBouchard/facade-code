@@ -1,0 +1,4 @@
+# Only needed to run the simulated tests in tests/.
+-r requirements.txt
+pytest
+adafruit-circuitpython-as5600==1.0.3

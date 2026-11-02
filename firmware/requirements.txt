@@ -1,0 +1,3 @@
+# CircuitPython libraries for the Feather. host/setup_board.py installs these.
+# circup also installs what they depend on (adafruit_bus_device, adafruit_register).
+adafruit_as5600
